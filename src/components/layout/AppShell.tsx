@@ -11,6 +11,7 @@ import {
   QueueListIcon,
   CogIcon,
   ArrowLeftOnRectangleIcon,
+  UserGroupIcon,
 } from "@heroicons/react/24/solid";
 import { clsx } from "clsx";
 
@@ -26,6 +27,12 @@ const NAV_ITEMS: NavItem[] = [
     label: "Queue",
     href: "/receptionist",
     icon: <QueueListIcon className="h-5 w-5" />,
+    roles: ["receptionist"],
+  },
+  {
+    label: "Patients",
+    href: "/receptionist/patients",
+    icon: <UserGroupIcon className="h-5 w-5" />,
     roles: ["receptionist"],
   },
   {

@@ -11,6 +11,19 @@ export interface User {
   created_at: string;
 }
 
+// Patient record (business-scoped)
+export interface Patient {
+  id: string;
+  business_id: string;
+  name: string;
+  phone_number: string;
+  age: number | null;
+  sex: "M" | "F" | "Other" | null;
+  address: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 // User's business membership with role
 export interface BusinessMembership {
   business_id: string;
