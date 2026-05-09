@@ -61,26 +61,22 @@ export default function LoginPage() {
       }
 
       const data = await response.json();
-      console.log("📋 Login response:", data);
 
       // Check if user belongs to multiple businesses
       if (!data.business_ids || data.business_ids.length === 0) {
         throw new Error("User does not belong to any business");
       }
 
-      console.log("💾 Storing token and redirecting...");
       localStorage.setItem("auth_token", data.token);
 
       let redirectPath = "/";
 
       if (data.business_ids.length > 1) {
-        console.log("🏢 Multiple businesses, redirecting to selector");
         redirectPath = "/select-business";
       } else {
         // Auto-select single business
         const businessId = data.business_ids[0].id;
         const role = data.business_ids[0].role;
-        console.log("📍 Single business, redirecting to:", role, businessId);
 
         localStorage.setItem("business_id", businessId);
         localStorage.setItem("business_role", role);
@@ -91,7 +87,6 @@ export default function LoginPage() {
                      : "/";
       }
 
-      console.log("🔀 Redirecting to:", redirectPath);
       toast.success("Login successful!");
 
       // Use window.location for full page navigation

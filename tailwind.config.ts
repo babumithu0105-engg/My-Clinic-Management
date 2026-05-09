@@ -30,7 +30,7 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["var(--font-roboto)", ...defaultTheme.fontFamily.sans],
+        sans: ["var(--font-kodchasan)", ...defaultTheme.fontFamily.sans],
       },
       spacing: {
         touch: "44px",

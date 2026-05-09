@@ -50,7 +50,6 @@ export async function POST(request: NextRequest) {
 
     // Query user from database
     const emailLower = email.toLowerCase();
-    console.log("🔍 Login attempt - email:", emailLower);
 
     const { data: users, error: userError } = await supabaseServer
       .from("users")
@@ -58,41 +57,28 @@ export async function POST(request: NextRequest) {
       .eq("email", emailLower)
       .single();
 
-    console.log("🔍 Query result - users:", users, "error:", userError);
-
     if (userError || !users) {
       // Don't reveal if user exists or not (security best practice)
-      console.log("❌ User not found or query error:", userError?.message);
       throw Errors.BAD_REQUEST("Invalid email or password");
     }
 
-    console.log("✅ User found:", users.email);
-
     // Verify password
-    console.log("🔐 Verifying password...");
     const isPasswordValid = await verifyPassword(password, users.password_hash);
-    console.log("🔐 Password valid?", isPasswordValid);
     if (!isPasswordValid) {
-      console.log("❌ Password verification failed");
       throw Errors.BAD_REQUEST("Invalid email or password");
     }
 
     // Get user's business memberships
-    console.log("🏢 Fetching business memberships for user:", users.id);
     const { data: memberships, error: membershipError } = await supabaseServer
       .from("business_users")
       .select("business_id, role")
       .eq("user_id", users.id);
 
-    console.log("🏢 Memberships result:", memberships, "error:", membershipError?.message);
-
     if (membershipError || !memberships || memberships.length === 0) {
-      console.log("❌ No business memberships found");
       throw Errors.FORBIDDEN(
         "User does not belong to any business. Contact administrator."
       );
     }
-    console.log("✅ Business memberships found:", memberships.length);
 
     // Prepare business_ids array for JWT
     const business_ids = memberships.map((m) => ({

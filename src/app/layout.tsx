@@ -1,12 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Roboto } from "next/font/google";
+import { Kodchasan } from "next/font/google";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const roboto = Roboto({
-  weight: ["300", "400", "500", "700"],
+const kodchasan = Kodchasan({
+  weight: ["300", "400", "500", "600", "700"],
   subsets: ["latin"],
-  variable: "--font-roboto",
+  variable: "--font-kodchasan",
   display: "swap",
 });
 
@@ -30,7 +30,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={roboto.variable}>
+    <html lang="en" className={kodchasan.variable}>
       <body>
         {children}
         <Toaster position="bottom-center" />
