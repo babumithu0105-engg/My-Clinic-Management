@@ -75,7 +75,7 @@ export async function PUT(
       .update(updateData)
       .eq("id", appointmentId)
       .eq("business_id", context.business_id)
-      .select("*, patients(id, name, phone_number, age, sex)")
+      .select("*, patient:patients(id, name, phone_number, age, sex)")
       .single();
 
     if (updateError) {

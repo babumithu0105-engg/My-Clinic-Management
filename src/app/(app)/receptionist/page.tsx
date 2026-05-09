@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/context/AuthProvider";
 import { useBusiness } from "@/context/BusinessProvider";
 import { toast } from "sonner";
@@ -25,7 +25,7 @@ export default function ReceptionistDashboard() {
   const [rescheduleData, setRescheduleData] = useState<{ id: string; appointment: AppointmentWithPatient } | null>(null);
 
   // Load appointments for selected date
-  const loadAppointments = async () => {
+  const loadAppointments = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`/api/appointments?date=${selectedDate}`);
@@ -41,12 +41,12 @@ export default function ReceptionistDashboard() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [selectedDate]);
 
   // Fetch appointments when date changes
   useEffect(() => {
     loadAppointments();
-  }, [selectedDate]);
+  }, [loadAppointments]);
 
   if (!user) {
     return <div className="p-4">Loading...</div>;
@@ -186,23 +186,22 @@ export default function ReceptionistDashboard() {
                 className="p-4 bg-white border border-clinic-border rounded-lg hover:shadow-md transition-shadow"
               >
                 <div className="flex items-center justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                      <div className="font-semibold text-slate-900">
-                        {formatTime12h(appointment.appointment_time)}
-                      </div>
-                      <div className="text-sm text-slate-600">
-                        {appointment.duration_minutes} min
-                      </div>
-                      {getStatusBadge(appointment.status)}
-                    </div>
-                    <div className="text-sm text-slate-600">
-                      {appointment.patient?.name}
-                      {appointment.patient?.phone_number && ` • ${appointment.patient.phone_number}`}
-                    </div>
+                  <div className="font-semibold text-slate-900">
+                    {formatTime12h(appointment.appointment_time)}
+                  </div>
+                  <div className="text-sm text-slate-600">
+                    {appointment.duration_minutes} min
+                  </div>
+                  <div>
+                    {getStatusBadge(appointment.status)}
+                  </div>
+                  <div className="flex-1 text-sm text-slate-700 ml-4">
+                    {appointment.patient?.name}
+                    {appointment.patient?.age && <span className="hidden md:inline"> • Age {appointment.patient.age}</span>}
+                    {appointment.patient?.phone_number && ` • ${appointment.patient.phone_number}`}
                   </div>
 
-                  <div className="flex gap-2">
+                  <div className="flex gap-2 ml-4 flex-shrink-0">
                     <button
                       onClick={() => handleReschedule(appointment)}
                       disabled={appointment.status !== "scheduled"}

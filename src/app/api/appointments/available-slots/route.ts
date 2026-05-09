@@ -4,9 +4,15 @@ import { extractUserContext } from "@/lib/api/middleware-helpers";
 import { Errors, errorResponse, successResponse } from "@/lib/api/errors";
 import { generateTimeSlots } from "@/lib/utils";
 
+// Helper: Normalize time to HH:MM format (strips seconds if present)
+function normalizeTime(time: string): string {
+  return time.split(":").slice(0, 2).join(":");
+}
+
 // Helper: Add minutes to time string (HH:MM)
 function addMinutesToTime(time: string, minutes: number): string {
-  const [hours, mins] = time.split(":").map(Number);
+  const normalized = normalizeTime(time);
+  const [hours, mins] = normalized.split(":").map(Number);
   const totalMins = hours * 60 + mins + minutes;
   const newHours = Math.floor(totalMins / 60);
   const newMins = totalMins % 60;
@@ -108,22 +114,27 @@ export async function GET(request: NextRequest) {
       throw Errors.DATABASE_ERROR(apptError.message);
     }
 
+    // Normalize working hours times
+    const whStart = normalizeTime(workingHours.start_time);
+    const whEnd = normalizeTime(workingHours.end_time);
+
     // Generate all possible slots at 15-minute intervals
-    const allSlots = generateTimeSlots(workingHours.start_time, workingHours.end_time, 15);
+    const allSlots = generateTimeSlots(whStart, whEnd, 15);
 
     // Filter slots: keep only those where the duration window doesn't conflict
     const availableSlots = allSlots.filter((slot) => {
       const slotEnd = addMinutesToTime(slot, duration);
 
       // Check if slot would run past closing time
-      if (slotEnd > workingHours.end_time) {
+      if (slotEnd > whEnd) {
         return false;
       }
 
       // Check conflict with existing appointments
       for (const appt of existingAppointments) {
+        const apptStart = normalizeTime(appt.appointment_time);
         const apptEnd = addMinutesToTime(appt.appointment_time, appt.duration_minutes);
-        if (timesOverlap(slot, slotEnd, appt.appointment_time, apptEnd)) {
+        if (timesOverlap(slot, slotEnd, apptStart, apptEnd)) {
           return false;
         }
       }
@@ -131,7 +142,9 @@ export async function GET(request: NextRequest) {
       // Check conflict with doctor unavailability
       for (const unavail of unavailability) {
         if (unavail.start_time && unavail.end_time) {
-          if (timesOverlap(slot, slotEnd, unavail.start_time, unavail.end_time)) {
+          const unavailStart = normalizeTime(unavail.start_time);
+          const unavailEnd = normalizeTime(unavail.end_time);
+          if (timesOverlap(slot, slotEnd, unavailStart, unavailEnd)) {
             return false;
           }
         }

@@ -19,7 +19,7 @@ export async function GET(request: NextRequest) {
 
     const { data, error } = await supabaseServer
       .from("appointments")
-      .select("*, patients(id, name, phone_number, age, sex)")
+      .select("*, patient:patients(id, name, phone_number, age, sex)")
       .eq("business_id", context.business_id)
       .eq("appointment_date", date)
       .neq("status", "cancelled")
@@ -78,7 +78,7 @@ export async function POST(request: NextRequest) {
           receptionist_notes: validated.receptionist_notes || null,
         },
       ])
-      .select("*, patients(id, name, phone_number, age, sex)")
+      .select("*, patient:patients(id, name, phone_number, age, sex)")
       .single();
 
     if (insertError) {

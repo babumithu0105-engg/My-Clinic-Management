@@ -90,6 +90,7 @@ export function BookingForm({
   }, [open]);
 
   // Fetch available slots when date or duration changes
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (!date || !duration || !selectedPatient) {
       setSlots([]);
@@ -125,7 +126,7 @@ export function BookingForm({
     };
 
     fetchSlots();
-  }, [date, duration, selectedPatient, isEditMode, appointmentId]);
+  }, [date, duration, selectedPatient, isEditMode, appointmentId, selectedTime]);
 
   const handlePatientSelect = (patient: Patient) => {
     setSelectedPatient(patient);

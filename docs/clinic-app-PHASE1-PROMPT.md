@@ -811,22 +811,22 @@ const useFetch = (endpoint, options = {}) => {
 
 ## Phasing & Milestones
 
-### Phase 1 Milestone 1: Auth & Setup (Week 1)
-- [ ] GitHub repo created
-- [ ] Next.js project initialized
-- [ ] Supabase connected (India region)
-- [ ] Database tables created
-- [ ] Login/logout working
-- [ ] Business selector working
-- [ ] Role-based redirects working
+### Phase 1 Milestone 1: Auth & Setup (Week 1) ✅ COMPLETED
+- [x] GitHub repo created
+- [x] Next.js project initialized
+- [x] Supabase connected (India region)
+- [x] Database tables created
+- [x] Login/logout working
+- [x] Business selector working
+- [x] Role-based redirects working
 
-### Phase 1 Milestone 2: Patient & Appointment Management (Week 2)
-- [ ] Add patient
-- [ ] Search patient
-- [ ] View patient details
-- [ ] Book appointment (with slot calculation)
-- [ ] Reschedule/cancel appointment
-- [ ] Available slots endpoint working
+### Phase 1 Milestone 2: Patient & Appointment Management (Week 2) ✅ COMPLETED
+- [x] Add patient
+- [x] Search patient
+- [x] View patient details
+- [x] Book appointment (with slot calculation)
+- [x] Reschedule/cancel appointment
+- [x] Available slots endpoint working
 
 ### Phase 1 Milestone 3: Queue & Doctor Workflow (Week 2-3)
 - [ ] Queue display (booked + walk-in)
