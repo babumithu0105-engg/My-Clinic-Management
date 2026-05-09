@@ -3,7 +3,7 @@ import { z } from "zod";
 export const CreateAppointmentSchema = z.object({
   patient_id: z.string().uuid("Patient ID must be a valid UUID"),
   appointment_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Date must be in YYYY-MM-DD format"),
-  appointment_time: z.string().regex(/^\d{2}:\d{2}$/, "Time must be in HH:MM format"),
+  appointment_time: z.string().regex(/^\d{2}:\d{2}$/, "Time must be in HH:MM format").optional(), // Optional for walk-ins
   duration_minutes: z.number().int("Duration must be an integer").positive("Duration must be positive"),
   receptionist_notes: z.string().max(1000, "Notes must be 1000 characters or less").nullable().optional(),
   is_walk_in: z.boolean().optional().default(false),
