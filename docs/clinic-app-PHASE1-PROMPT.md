@@ -828,14 +828,14 @@ const useFetch = (endpoint, options = {}) => {
 - [x] Reschedule/cancel appointment
 - [x] Available slots endpoint working
 
-### Phase 1 Milestone 3: Queue & Doctor Workflow (Week 2-3)
-- [ ] Queue display (booked + walk-in)
-- [ ] Add walk-in
-- [ ] Send patient to doctor
-- [ ] Check-in patient
-- [ ] Document visit (structured + free-text)
-- [ ] Complete visit
-- [ ] Patient history view
+### Phase 1 Milestone 3: Queue & Doctor Workflow (Week 2-3) ✅ COMPLETED
+- [x] Queue display (booked + walk-in)
+- [x] Add walk-in
+- [x] Send patient to doctor
+- [x] Check-in patient
+- [x] Document visit (structured + free-text)
+- [x] Complete visit
+- [x] Patient history view
 
 ### Phase 1 Milestone 4: Admin Configuration (Week 3)
 - [x] Business name/info management (name, phone, email, address)

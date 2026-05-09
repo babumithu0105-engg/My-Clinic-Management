@@ -63,6 +63,10 @@ export async function POST(request: NextRequest) {
       return errorResponse(Errors.NOT_FOUND("Patient not found or does not belong to your business"));
     }
 
+    // For walk-ins, use current time if not provided
+    const appointmentTime = validated.appointment_time ||
+      new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false });
+
     // Insert appointment
     const { data: appointment, error: insertError } = await supabaseServer
       .from("appointments")
@@ -71,7 +75,7 @@ export async function POST(request: NextRequest) {
           business_id: context.business_id,
           patient_id: validated.patient_id,
           appointment_date: validated.appointment_date,
-          appointment_time: validated.appointment_time,
+          appointment_time: appointmentTime,
           duration_minutes: validated.duration_minutes,
           status: "scheduled",
           is_walk_in: validated.is_walk_in || false,
