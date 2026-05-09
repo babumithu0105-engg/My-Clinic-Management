@@ -838,10 +838,11 @@ const useFetch = (endpoint, options = {}) => {
 - [ ] Patient history view
 
 ### Phase 1 Milestone 4: Admin Configuration (Week 3)
-- [ ] Working hours per day
-- [ ] Holidays management
+- [x] Business name/info management (name, phone, email, address)
+- [x] Working hours per day
+- [x] Holidays management
 - [ ] Doctor unavailability
-- [ ] Visit field customization
+- [x] Visit field customization
 - [ ] User management (create, edit, delete)
 
 ### Phase 1 Milestone 5: Polish & Testing (Week 3-4)
