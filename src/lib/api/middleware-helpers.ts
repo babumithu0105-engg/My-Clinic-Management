@@ -22,13 +22,8 @@ export interface RequestContext {
  * This function extracts the payload for use in the route
  */
 export function extractUserContext(request: NextRequest): RequestContext {
-  // Get JWT from Authorization header (set by middleware)
-  const authHeader = request.headers.get("authorization");
-  if (!authHeader?.startsWith("Bearer ")) {
-    throw Errors.MISSING_CREDENTIALS();
-  }
-
   // Extract payload from X-User-* headers (set by middleware after JWT verification)
+  // Middleware verifies the JWT token and sets these headers on all protected routes
   const user_id = request.headers.get("x-user-id");
   const email = request.headers.get("x-user-email");
   const business_id = request.headers.get("x-business-id");
@@ -38,7 +33,7 @@ export function extractUserContext(request: NextRequest): RequestContext {
     | "receptionist";
 
   if (!user_id || !email || !business_id || !role) {
-    throw Errors.INVALID_JWT();
+    throw Errors.MISSING_CREDENTIALS();
   }
 
   return {

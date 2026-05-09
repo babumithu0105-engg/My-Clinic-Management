@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
@@ -13,7 +12,6 @@ interface LoginFormData {
 }
 
 export default function LoginPage() {
-  const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
@@ -63,34 +61,43 @@ export default function LoginPage() {
       }
 
       const data = await response.json();
+      console.log("📋 Login response:", data);
 
       // Check if user belongs to multiple businesses
-      if (data.business_ids.length > 1) {
-        // Store token and redirect to business selector
-        localStorage.setItem("auth_token", data.token);
-        router.push("/select-business");
-      } else if (data.business_ids.length === 1) {
-        // Auto-select single business and redirect to dashboard
-        localStorage.setItem("auth_token", data.token);
-        localStorage.setItem("business_id", data.business_ids[0].id);
-        localStorage.setItem("business_role", data.business_ids[0].role);
-
-        // Redirect based on role
-        const role = data.business_ids[0].role;
-        if (role === "receptionist") {
-          router.push("/receptionist");
-        } else if (role === "doctor") {
-          router.push("/doctor");
-        } else if (role === "admin") {
-          router.push("/admin");
-        } else {
-          router.push("/");
-        }
-      } else {
+      if (!data.business_ids || data.business_ids.length === 0) {
         throw new Error("User does not belong to any business");
       }
 
+      console.log("💾 Storing token and redirecting...");
+      localStorage.setItem("auth_token", data.token);
+
+      let redirectPath = "/";
+
+      if (data.business_ids.length > 1) {
+        console.log("🏢 Multiple businesses, redirecting to selector");
+        redirectPath = "/select-business";
+      } else {
+        // Auto-select single business
+        const businessId = data.business_ids[0].id;
+        const role = data.business_ids[0].role;
+        console.log("📍 Single business, redirecting to:", role, businessId);
+
+        localStorage.setItem("business_id", businessId);
+        localStorage.setItem("business_role", role);
+
+        redirectPath = role === "receptionist" ? "/receptionist"
+                     : role === "doctor" ? "/doctor"
+                     : role === "admin" ? "/admin"
+                     : "/";
+      }
+
+      console.log("🔀 Redirecting to:", redirectPath);
       toast.success("Login successful!");
+
+      // Use window.location for full page navigation
+      setTimeout(() => {
+        window.location.href = redirectPath;
+      }, 500);
     } catch (error) {
       const message = error instanceof Error ? error.message : "Login failed";
       toast.error(message);
@@ -149,15 +156,6 @@ export default function LoginPage() {
           </CardFooter>
         </form>
 
-        <div className="px-6 py-4 border-t border-clinic-border text-center">
-          <p className="text-sm text-slate-600">
-            Demo credentials:
-            <br />
-            email: demo@clinic.com
-            <br />
-            password: Demo@123
-          </p>
-        </div>
       </Card>
     </div>
   );

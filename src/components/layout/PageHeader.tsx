@@ -14,15 +14,15 @@ const PageHeader = React.forwardRef<HTMLDivElement, PageHeaderProps>(
     <div
       ref={ref}
       className={clsx(
-        "mb-6 flex flex-col items-start justify-between gap-4 border-b border-slate-200 pb-6 sm:flex-row sm:items-center",
+        "mb-8 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end",
         className
       )}
       {...props}
     >
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-slate-900">{title}</h1>
+      <div className="space-y-1">
+        <h1 className="text-4xl font-bold tracking-tight text-slate-900">{title}</h1>
         {description && (
-          <p className="text-slate-600">{description}</p>
+          <p className="text-base text-slate-600 font-normal">{description}</p>
         )}
       </div>
       {action && <div className="w-full sm:w-auto">{action}</div>}

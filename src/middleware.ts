@@ -8,20 +8,7 @@ import { verifyJWT, extractBearerToken } from "@/lib/auth/jwt";
  */
 
 // Routes that don't require authentication
-const PUBLIC_ROUTES = ["/", "/login", "/select-business"];
-
-// Routes that require authentication
-const PROTECTED_ROUTES = [
-  "/(app)",
-  "/api/auth/logout",
-  "/api/auth/me",
-  "/api/patients",
-  "/api/appointments",
-  "/api/visits",
-  "/api/queue",
-  "/api/config",
-  "/api/users",
-];
+const PUBLIC_ROUTES = ["/login", "/select-business", "/api/auth/login", "/api/health", "/dev-preview"];
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
@@ -31,28 +18,30 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  // Check if this is a protected route
-  const isProtected = PROTECTED_ROUTES.some(
-    (route) =>
-      pathname.startsWith(route) ||
-      pathname.match(new RegExp(`^${route.replace("/(app)", "/(app)")}`))
-  );
-
-  if (!isProtected) {
+  // Root "/" goes to login
+  if (pathname === "/") {
     return NextResponse.next();
   }
 
-  // Extract JWT from Authorization header
-  const authHeader = request.headers.get("authorization");
+  // At this point, middleware only runs on protected routes (defined in config.matcher below)
+  // Extract JWT from Authorization header OR httpOnly cookie
+  let token: string | null = null;
 
-  if (!authHeader) {
+  const authHeader = request.headers.get("authorization");
+  if (authHeader) {
+    token = extractBearerToken(authHeader);
+  } else {
+    // Fall back to httpOnly cookie (set by setAuthCookie on login)
+    token = request.cookies.get("auth_token")?.value || null;
+  }
+
+  if (!token) {
     // No token provided - redirect to login
     return NextResponse.redirect(new URL("/login", request.url));
   }
 
   try {
     // Extract and verify JWT
-    const token = extractBearerToken(authHeader);
     const payload = await verifyJWT(token);
 
     // Create a new response with user context in headers
@@ -93,8 +82,10 @@ export async function middleware(request: NextRequest) {
  */
 export const config = {
   matcher: [
-    // Protect all app routes
-    "/(app)/:path*",
+    // Protect dashboard routes (receptionist, doctor, admin)
+    "/receptionist/:path*",
+    "/doctor/:path*",
+    "/admin/:path*",
     // Protect specific API routes
     "/api/patients/:path*",
     "/api/appointments/:path*",

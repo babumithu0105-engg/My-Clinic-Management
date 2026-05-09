@@ -24,19 +24,19 @@ interface NavItem {
 const NAV_ITEMS: NavItem[] = [
   {
     label: "Queue",
-    href: "/app/receptionist",
+    href: "/receptionist",
     icon: <QueueListIcon className="h-5 w-5" />,
     roles: ["receptionist"],
   },
   {
     label: "Queue",
-    href: "/app/doctor",
+    href: "/doctor",
     icon: <QueueListIcon className="h-5 w-5" />,
     roles: ["doctor"],
   },
   {
     label: "Config",
-    href: "/app/admin",
+    href: "/admin",
     icon: <CogIcon className="h-5 w-5" />,
     roles: ["admin"],
   },
