@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  @apply border-clinic-border;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-family: var(--font-kodchasan), -apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", sans-serif;
+}
+
+body {
+  @apply bg-clinic-bg text-slate-800 font-sans;
+  font-family: inherit;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: inherit;
+  font-weight: 600;
+}
