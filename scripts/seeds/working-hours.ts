@@ -47,7 +47,7 @@ export async function seedWorkingHours() {
     }
 
     // Insert new working hours
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from('working_hours')
       .insert(workingHours)
       .select()
