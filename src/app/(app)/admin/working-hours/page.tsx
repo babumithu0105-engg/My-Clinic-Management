@@ -7,6 +7,7 @@ import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { TimePicker } from "@/components/ui/TimePicker";
 
 const DAYS = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
@@ -110,7 +111,7 @@ export default function WorkingHoursAdmin() {
   };
 
   if (!user) {
-    return <div className="p-4">Loading...</div>;
+    return <LoadingOverlay message="Loading your dashboard..." />;
   }
 
   return (

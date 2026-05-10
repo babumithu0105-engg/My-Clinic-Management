@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useAuth } from "@/context/AuthProvider";
 import { PageHeader } from "@/components/layout/PageHeader";
+import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import {
   BuildingOfficeIcon,
   ClockIcon,
@@ -14,7 +15,7 @@ export default function AdminDashboard() {
   const { user } = useAuth();
 
   if (!user) {
-    return <div className="p-4">Loading...</div>;
+    return <LoadingOverlay message="Loading your dashboard..." />;
   }
 
   return (

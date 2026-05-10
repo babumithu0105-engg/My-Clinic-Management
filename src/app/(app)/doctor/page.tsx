@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { VisitSheet } from "@/components/visits/VisitSheet";
 import { ClockIcon, UserGroupIcon } from "@heroicons/react/24/outline";
 import { formatTime12h } from "@/lib/utils";
@@ -66,7 +67,7 @@ export default function DoctorDashboard() {
   }, [loadQueue]);
 
   if (!user) {
-    return <div className="p-4">Loading...</div>;
+    return <LoadingOverlay message="Loading your dashboard..." />;
   }
 
   const handleStartVisit = (appointment: AppointmentWithPatient) => {

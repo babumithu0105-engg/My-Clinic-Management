@@ -49,7 +49,7 @@ export async function GET(
       appointments: appointments as AppointmentWithPatient[],
     };
 
-    return successResponse(result);
+    return successResponse({ data: result });
   } catch (error) {
     return errorResponse(error);
   }
@@ -103,7 +103,7 @@ export async function PUT(
       throw Errors.DATABASE_ERROR(error.message);
     }
 
-    return successResponse(data as Patient);
+    return successResponse({ data: data as Patient });
   } catch (error) {
     if (error instanceof Error && error.message.includes("validation")) {
       return errorResponse(Errors.VALIDATION_ERROR(error.message));

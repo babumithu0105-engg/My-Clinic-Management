@@ -40,6 +40,12 @@ Thumbs.db
 # Test coverage
 coverage/
 
+# Playwright test artifacts
+test-results/
+*.trace
+trace.zip
+error-context.md
+
 # Temporary files
 tmp/
 temp/
