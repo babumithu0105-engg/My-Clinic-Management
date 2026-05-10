@@ -31,14 +31,20 @@ export async function PUT(
     // Handle move_up / move_down actions
     if (body.action === "move_up" || body.action === "move_down") {
       const direction = body.action === "move_up" ? -1 : 1;
-      const operator = direction === -1 ? "<" : ">";
 
       // Get the adjacent field to swap with
-      const { data: adjacentFields, error: adjacentError } = await supabaseServer
+      let query = supabaseServer
         .from("visit_documentation_fields")
         .select("*")
-        .eq("business_id", context.business_id)
-        .filter("field_order", operator as any, field.field_order)
+        .eq("business_id", context.business_id);
+
+      if (direction === -1) {
+        query = query.lt("field_order", field.field_order);
+      } else {
+        query = query.gt("field_order", field.field_order);
+      }
+
+      const { data: adjacentFields, error: adjacentError } = await query
         .order("field_order", { ascending: direction === 1 })
         .limit(1);
 
