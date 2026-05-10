@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { ConfirmInline } from "@/components/ui/ConfirmInline";
 import { Badge } from "@/components/ui/Badge";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/Sheet";
@@ -204,7 +205,7 @@ export default function VisitFieldsAdmin() {
 
 
   if (!user) {
-    return <div className="p-4">Loading...</div>;
+    return <LoadingOverlay message="Loading your dashboard..." />;
   }
 
   return (

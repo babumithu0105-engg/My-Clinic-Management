@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { ConfirmInline } from "@/components/ui/ConfirmInline";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/Sheet";
 import { CalendarDaysIcon, TrashIcon } from "@heroicons/react/24/outline";
@@ -117,7 +118,7 @@ export default function HolidaysAdmin() {
   };
 
   if (!user) {
-    return <div className="p-4">Loading...</div>;
+    return <LoadingOverlay message="Loading your dashboard..." />;
   }
 
   return (

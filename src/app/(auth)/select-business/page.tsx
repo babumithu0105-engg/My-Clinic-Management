@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/Card";
+import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { toast } from "sonner";
 
 interface BusinessOption {
@@ -79,11 +80,7 @@ export default function SelectBusinessPage() {
   };
 
   if (isLoading && businesses.length === 0) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-clinic-bg">
-        <p className="text-slate-600">Loading...</p>
-      </div>
-    );
+    return <LoadingOverlay message="Loading your clinics..." />;
   }
 
   return (

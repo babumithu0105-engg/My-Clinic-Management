@@ -80,7 +80,7 @@ export async function POST(request: NextRequest) {
     if (existingVisit) {
       // Return existing visit
       const visit = await fetchVisitWithFields(context.business_id, existingVisit.id);
-      return successResponse(visit);
+      return successResponse({ data: visit });
     }
 
     // Create new visit with check-in time
@@ -111,7 +111,7 @@ export async function POST(request: NextRequest) {
       .eq("id", validated.appointment_id)
       .eq("business_id", context.business_id);
 
-    return successResponse(visit, 201);
+    return successResponse({ data: visit }, 201);
   } catch (error) {
     if (error instanceof Error && error.message.includes("validation")) {
       return errorResponse(Errors.VALIDATION_ERROR(error.message));

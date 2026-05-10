@@ -7,10 +7,10 @@ import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select } from "@/components/ui/Select";
 import { DatePicker } from "@/components/ui/DatePicker";
-import { Skeleton } from "@/components/ui/Skeleton";
 import { ConfirmInline } from "@/components/ui/ConfirmInline";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
+import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { toast } from "sonner";
+import { XMarkIcon, CheckIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import type { AppointmentWithPatient, VisitWithFields, VisitDocumentationField, Patient } from "@/types";
 
 interface VisitSheetProps {
@@ -72,7 +72,7 @@ export function VisitSheet({ appointment, open, onOpenChange, onComplete }: Visi
 
         // Initialize field values from visit
         const fieldValues: Record<string, string> = {};
-        const fields = fieldsData.data || [];
+        const fields = fieldsData.fields || [];
         fields.forEach((field: VisitDocumentationField) => {
           fieldValues[field.id] = visitData.data?.field_values?.[field.id] || "";
         });
@@ -217,99 +217,111 @@ export function VisitSheet({ appointment, open, onOpenChange, onComplete }: Visi
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-2xl overflow-y-auto">
+      <SheetContent className="w-full sm:max-w-3xl overflow-y-auto">
         <SheetHeader>
           <SheetTitle>Patient Visit</SheetTitle>
           <SheetDescription>Document patient visit details</SheetDescription>
         </SheetHeader>
 
         {state.isLoading ? (
-          <div className="mt-6 space-y-4">
-            <Skeleton className="h-20" />
-            <Skeleton className="h-32" />
-            <Skeleton className="h-20" />
-          </div>
+          <LoadingOverlay message="Loading patient visit..." />
         ) : state.patient && state.visit ? (
-          <div className="mt-6 space-y-6">
+          <div className="mt-4 space-y-4 px-6">
             {/* Patient Info */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="text-lg">Patient Information</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium text-slate-600">Name:</span>
-                  <span className="text-sm text-slate-900">{state.patient.name}</span>
+            <div className="pb-4 border-b">
+              <h3 className="font-semibold text-slate-900 mb-3">Patient Information</h3>
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center gap-2 px-3 py-3 bg-blue-50 text-blue-900 rounded-lg">
+                  <span className="text-xs font-medium text-blue-600 uppercase">Name</span>
+                  <span className="text-sm font-semibold truncate">{state.patient.name}</span>
                 </div>
                 {state.patient.age && (
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium text-slate-600">Age:</span>
-                    <span className="text-sm text-slate-900">{state.patient.age}</span>
+                  <div className="flex items-center gap-2 px-3 py-3 bg-green-50 text-green-900 rounded-lg">
+                    <span className="text-xs font-medium text-green-600 uppercase">Age</span>
+                    <span className="text-sm font-semibold">{state.patient.age}</span>
                   </div>
                 )}
-                {state.patient.sex && (
-                  <div className="flex justify-between">
-                    <span className="text-sm font-medium text-slate-600">Sex:</span>
-                    <span className="text-sm text-slate-900">{state.patient.sex}</span>
-                  </div>
-                )}
-                <div className="flex justify-between">
-                  <span className="text-sm font-medium text-slate-600">Phone:</span>
-                  <span className="text-sm text-slate-900">{state.patient.phone_number}</span>
+                <div className="flex items-center gap-2 px-3 py-3 bg-orange-50 text-orange-900 rounded-lg">
+                  <span className="text-xs font-medium text-orange-600 uppercase">Phone</span>
+                  <span className="text-sm font-semibold truncate">{state.patient.phone_number}</span>
                 </div>
-                {appointment?.receptionist_notes && (
-                  <div className="pt-2 border-t">
-                    <span className="text-sm font-medium text-slate-600">Receptionist Notes:</span>
-                    <p className="text-sm text-slate-700 mt-1">{appointment.receptionist_notes}</p>
+                {state.patient.sex && (
+                  <div className="flex items-center gap-2 px-3 py-3 bg-purple-50 text-purple-900 rounded-lg">
+                    <span className="text-xs font-medium text-purple-600 uppercase">Sex</span>
+                    <span className="text-sm font-semibold">{state.patient.sex}</span>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+              </div>
+              {appointment?.receptionist_notes && (
+                <div className="bg-slate-50 rounded-lg p-3 mt-3">
+                  <p className="text-xs font-medium text-slate-600 uppercase tracking-wide mb-1">Receptionist Notes</p>
+                  <p className="text-sm text-slate-700">{appointment.receptionist_notes}</p>
+                </div>
+              )}
+            </div>
 
-            {/* Dynamic Fields */}
-            {state.fields.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Visit Details</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {state.fields.map((field) => renderField(field))}
-                </CardContent>
-              </Card>
+            {/* Dynamic Fields or Notes Section */}
+            {state.fields.length > 0 ? (
+              <>
+                <div className="pb-4 border-b">
+                  <h3 className="font-semibold text-slate-900 mb-3">Visit Details</h3>
+                  <div className="space-y-4">
+                    {state.fields.map((field) => renderField(field))}
+                  </div>
+                </div>
+
+                {/* Free Text Notes */}
+                <Textarea
+                  label="Additional Notes"
+                  value={state.freeTextNotes}
+                  onChange={(e) =>
+                    setState((prev) => ({ ...prev, freeTextNotes: e.target.value }))
+                  }
+                  placeholder="Any additional observations or notes..."
+                  rows={4}
+                  disabled={state.isSaving || state.isCompleting}
+                />
+              </>
+            ) : (
+              <div className="pb-4">
+                <h3 className="font-semibold text-slate-900 mb-3">Visit Notes</h3>
+                <Textarea
+                  value={state.freeTextNotes}
+                  onChange={(e) =>
+                    setState((prev) => ({ ...prev, freeTextNotes: e.target.value }))
+                  }
+                  placeholder="Document patient visit observations, symptoms, diagnosis, treatment plan, and any other relevant information..."
+                  rows={8}
+                  disabled={state.isSaving || state.isCompleting}
+                />
+                <p className="text-sm text-slate-500 mt-2">
+                  Tip: Custom visit fields can be configured in Admin → Visit Fields
+                </p>
+              </div>
             )}
 
-            {/* Free Text Notes */}
-            <Textarea
-              label="Additional Notes"
-              value={state.freeTextNotes}
-              onChange={(e) =>
-                setState((prev) => ({ ...prev, freeTextNotes: e.target.value }))
-              }
-              placeholder="Any additional observations or notes..."
-              rows={4}
-              disabled={state.isSaving || state.isCompleting}
-            />
-
             {/* Actions */}
-            <div className="flex gap-3 pt-2">
+            <div className="flex gap-3 pt-6 pb-4 px-4 border-t justify-end">
               <Button
                 type="button"
-                variant="ghost"
-                fullWidth
+                variant="secondary"
                 onClick={() => onOpenChange(false)}
                 disabled={state.isSaving || state.isCompleting}
+                className="flex items-center justify-center gap-2 px-6 h-10 rounded-lg font-medium min-w-[100px]"
               >
-                Close
+                <XMarkIcon className="w-5 h-5" />
+                <span>Close</span>
               </Button>
               <Button
                 type="button"
                 variant="primary"
-                fullWidth
                 onClick={handleSave}
                 isLoading={state.isSaving}
                 disabled={state.isCompleting}
+                className="flex items-center justify-center gap-2 px-6 h-10 rounded-lg font-semibold min-w-[100px]"
               >
-                Save
+                {!state.isSaving && <CheckIcon className="w-5 h-5" />}
+                <span>{state.isSaving ? "Saving..." : "Save"}</span>
               </Button>
               <ConfirmInline
                 onConfirm={handleComplete}
@@ -322,8 +334,10 @@ export function VisitSheet({ appointment, open, onOpenChange, onComplete }: Visi
                   variant="primary"
                   isLoading={state.isCompleting}
                   disabled={state.isSaving}
+                  className="flex items-center justify-center gap-2 px-6 h-10 rounded-lg font-semibold min-w-[100px]"
                 >
-                  Complete
+                  {!state.isCompleting && <CheckCircleIcon className="w-5 h-5" />}
+                  <span>{state.isCompleting ? "Completing..." : "Complete"}</span>
                 </Button>
               </ConfirmInline>
             </div>

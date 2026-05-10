@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
+import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { ConfirmInline } from "@/components/ui/ConfirmInline";
 import { BookingForm } from "@/components/appointments/BookingForm";
 import { WalkInForm } from "@/components/appointments/WalkInForm";
@@ -36,6 +37,7 @@ export default function ReceptionistDashboard() {
   const [openBookingForm, setOpenBookingForm] = useState(false);
   const [openWalkInForm, setOpenWalkInForm] = useState(false);
   const [rescheduleData, setRescheduleData] = useState<{ id: string; appointment: AppointmentWithPatient } | null>(null);
+  const [sendingToDoctor, setSendingToDoctor] = useState<string | null>(null);
 
   // Load queue (today)
   const loadQueue = useCallback(async () => {
@@ -86,7 +88,7 @@ export default function ReceptionistDashboard() {
   }, [loadAppointments]);
 
   if (!user) {
-    return <div className="p-4">Loading...</div>;
+    return <LoadingOverlay message="Loading your dashboard..." />;
   }
 
   const handleBookingSuccess = () => {
@@ -107,6 +109,7 @@ export default function ReceptionistDashboard() {
   };
 
   const handleSendToDoctor = async (appointmentId: string) => {
+    setSendingToDoctor(appointmentId);
     try {
       const response = await fetch(`/api/appointments/${appointmentId}`, {
         method: "PUT",
@@ -119,6 +122,8 @@ export default function ReceptionistDashboard() {
       loadQueue();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to send patient");
+    } finally {
+      setSendingToDoctor(null);
     }
   };
 
@@ -287,17 +292,19 @@ export default function ReceptionistDashboard() {
 
                           <div className="flex gap-2 ml-4 flex-shrink-0">
                             <Button
-                              variant="ghost"
+                              variant="primary"
                               size="sm"
                               onClick={() => handleSendToDoctor(appointment.id)}
-                              disabled={appointment.status !== "scheduled"}
+                              disabled={appointment.status !== "scheduled" || sendingToDoctor === appointment.id}
                               title={
                                 appointment.status !== "scheduled"
                                   ? "Patient already sent or completed"
+                                  : sendingToDoctor === appointment.id
+                                  ? "Sending to doctor..."
                                   : "Send to Doctor"
                               }
                             >
-                              Send to Doctor
+                              {sendingToDoctor === appointment.id ? "Sending..." : "Send to Doctor"}
                             </Button>
                             <button
                               onClick={() => handleReschedule(appointment)}
@@ -369,12 +376,19 @@ export default function ReceptionistDashboard() {
 
                           <div className="flex gap-2 ml-4 flex-shrink-0">
                             <Button
-                              variant="ghost"
+                              variant="primary"
                               size="sm"
                               onClick={() => handleSendToDoctor(appointment.id)}
-                              disabled={appointment.status !== "scheduled"}
+                              disabled={appointment.status !== "scheduled" || sendingToDoctor === appointment.id}
+                              title={
+                                appointment.status !== "scheduled"
+                                  ? "Patient already sent or completed"
+                                  : sendingToDoctor === appointment.id
+                                  ? "Sending to doctor..."
+                                  : "Send to Doctor"
+                              }
                             >
-                              Send to Doctor
+                              {sendingToDoctor === appointment.id ? "Sending..." : "Send to Doctor"}
                             </Button>
                             <ConfirmInline
                               onConfirm={() => handleCancelAppointment(appointment.id)}
@@ -404,16 +418,32 @@ export default function ReceptionistDashboard() {
       {/* Schedule Tab */}
       {activeTab === "schedule" && (
         <div className="mb-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-slate-900">
-              Appointments for {formatDateReadable(selectedDate)}
-            </h2>
-            <input
-              type="date"
-              value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
-              className="px-3 py-2 border border-clinic-border rounded-lg text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-500"
-            />
+          <h3 className="text-lg font-bold text-slate-900 mb-4">
+            Upcoming Appointments
+          </h3>
+
+          {/* 3-Day View Tabs */}
+          <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+            {[0, 1, 2].map((daysOffset) => {
+              const date = new Date();
+              date.setDate(date.getDate() + daysOffset);
+              const dateStr = date.toISOString().split('T')[0];
+              const isSelected = selectedDate === dateStr;
+
+              return (
+                <button
+                  key={dateStr}
+                  onClick={() => setSelectedDate(dateStr)}
+                  className={`px-4 py-2 rounded-lg whitespace-nowrap font-medium transition-colors ${
+                    isSelected
+                      ? "bg-primary-500 text-white"
+                      : "bg-slate-100 text-slate-900 hover:bg-slate-200"
+                  }`}
+                >
+                  <div className="text-sm">{formatDateReadable(dateStr)}</div>
+                </button>
+              );
+            })}
           </div>
 
           {scheduleLoading ? (

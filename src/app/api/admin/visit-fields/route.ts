@@ -8,7 +8,7 @@ import { CreateVisitFieldSchema } from "@/lib/validations/admin";
 export async function GET(request: NextRequest) {
   try {
     const context = extractUserContext(request);
-    validateRole(context, ["admin"]);
+    validateRole(context, ["admin", "doctor"]);
 
     const { data: fields, error } = await supabaseServer
       .from("visit_documentation_fields")

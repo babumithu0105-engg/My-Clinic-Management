@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { PhoneInput } from "@/components/ui/PhoneInput";
 
 interface BusinessData {
@@ -108,7 +109,7 @@ export default function BusinessInfoAdmin() {
   };
 
   if (!user) {
-    return <div className="p-4">Loading...</div>;
+    return <LoadingOverlay message="Loading your dashboard..." />;
   }
 
   return (
