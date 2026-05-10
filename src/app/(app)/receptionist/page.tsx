@@ -13,7 +13,7 @@ import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { ConfirmInline } from "@/components/ui/ConfirmInline";
 import { BookingForm } from "@/components/appointments/BookingForm";
 import { WalkInForm } from "@/components/appointments/WalkInForm";
-import { CalendarIcon, UserGroupIcon, UserPlusIcon, PencilIcon, TrashIcon } from "@heroicons/react/24/outline";
+import { CalendarIcon, UserGroupIcon, UserPlusIcon, PencilIcon, TrashIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
 import { formatTime12h, formatDateReadable, getCurrentDate } from "@/lib/utils";
 import type { AppointmentWithPatient, QueueResponse } from "@/types";
 
@@ -38,6 +38,7 @@ export default function ReceptionistDashboard() {
   const [openWalkInForm, setOpenWalkInForm] = useState(false);
   const [rescheduleData, setRescheduleData] = useState<{ id: string; appointment: AppointmentWithPatient } | null>(null);
   const [sendingToDoctor, setSendingToDoctor] = useState<string | null>(null);
+  const [sentToDoctor, setSentToDoctor] = useState<Set<string>>(new Set());
 
   // Load queue (today)
   const loadQueue = useCallback(async () => {
@@ -119,6 +120,7 @@ export default function ReceptionistDashboard() {
 
       if (!response.ok) throw new Error("Failed to send patient to doctor");
       toast.success("Patient sent to doctor");
+      setSentToDoctor((prev) => new Set([...prev, appointmentId]));
       loadQueue();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "Failed to send patient");
@@ -297,14 +299,25 @@ export default function ReceptionistDashboard() {
                               onClick={() => handleSendToDoctor(appointment.id)}
                               disabled={appointment.status !== "scheduled" || sendingToDoctor === appointment.id}
                               title={
-                                appointment.status !== "scheduled"
+                                sentToDoctor.has(appointment.id)
+                                  ? "Patient sent to doctor"
+                                  : appointment.status !== "scheduled"
                                   ? "Patient already sent or completed"
                                   : sendingToDoctor === appointment.id
                                   ? "Sending to doctor..."
                                   : "Send to Doctor"
                               }
                             >
-                              {sendingToDoctor === appointment.id ? "Sending..." : "Send to Doctor"}
+                              {sendingToDoctor === appointment.id ? (
+                                "Sending..."
+                              ) : sentToDoctor.has(appointment.id) ? (
+                                <span className="flex items-center gap-1">
+                                  <CheckCircleIcon className="w-4 h-4" />
+                                  Sent
+                                </span>
+                              ) : (
+                                "Send to Doctor"
+                              )}
                             </Button>
                             <button
                               onClick={() => handleReschedule(appointment)}
@@ -381,14 +394,25 @@ export default function ReceptionistDashboard() {
                               onClick={() => handleSendToDoctor(appointment.id)}
                               disabled={appointment.status !== "scheduled" || sendingToDoctor === appointment.id}
                               title={
-                                appointment.status !== "scheduled"
+                                sentToDoctor.has(appointment.id)
+                                  ? "Patient sent to doctor"
+                                  : appointment.status !== "scheduled"
                                   ? "Patient already sent or completed"
                                   : sendingToDoctor === appointment.id
                                   ? "Sending to doctor..."
                                   : "Send to Doctor"
                               }
                             >
-                              {sendingToDoctor === appointment.id ? "Sending..." : "Send to Doctor"}
+                              {sendingToDoctor === appointment.id ? (
+                                "Sending..."
+                              ) : sentToDoctor.has(appointment.id) ? (
+                                <span className="flex items-center gap-1">
+                                  <CheckCircleIcon className="w-4 h-4" />
+                                  Sent
+                                </span>
+                              ) : (
+                                "Send to Doctor"
+                              )}
                             </Button>
                             <ConfirmInline
                               onConfirm={() => handleCancelAppointment(appointment.id)}
