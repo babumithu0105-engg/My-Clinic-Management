@@ -132,7 +132,7 @@ export default function DoctorDashboard() {
       {/* Queue Section */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-slate-900">Today's Queue</h2>
+          <h2 className="text-2xl font-bold text-slate-900">Today&apos;s Queue</h2>
           <Button
             variant="ghost"
             size="sm"

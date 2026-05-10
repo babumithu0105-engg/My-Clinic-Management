@@ -219,7 +219,7 @@ export default function ReceptionistDashboard() {
                 : "border-transparent text-slate-600 hover:text-slate-900"
             }`}
           >
-            Today's Queue
+            Today&apos;s Queue
           </button>
           <button
             onClick={() => setActiveTab("schedule")}

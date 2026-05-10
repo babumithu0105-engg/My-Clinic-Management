@@ -95,7 +95,7 @@ export function VisitSheet({ appointment, open, onOpenChange, onComplete }: Visi
     };
 
     initializeVisit();
-  }, [open, appointment]);
+  }, [open, appointment, onOpenChange]);
 
   const handleFieldChange = (fieldId: string, value: string) => {
     setState((prev) => ({
