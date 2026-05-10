@@ -3,8 +3,12 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card";
 import { toast } from "sonner";
+import {
+  CheckCircleIcon,
+  SparklesIcon,
+  ClipboardDocumentListIcon,
+} from "@heroicons/react/24/outline";
 
 interface LoginFormData {
   email: string;
@@ -22,7 +26,6 @@ export default function LoginPage() {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
     if (errors[name as keyof LoginFormData]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -33,7 +36,6 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      // Validate inputs
       const newErrors: Partial<LoginFormData> = {};
 
       if (!formData.email) {
@@ -48,7 +50,6 @@ export default function LoginPage() {
         return;
       }
 
-      // Send login request
       const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -62,7 +63,6 @@ export default function LoginPage() {
 
       const data = await response.json();
 
-      // Check if user belongs to multiple businesses
       if (!data.business_ids || data.business_ids.length === 0) {
         throw new Error("User does not belong to any business");
       }
@@ -74,7 +74,6 @@ export default function LoginPage() {
       if (data.business_ids.length > 1) {
         redirectPath = "/select-business";
       } else {
-        // Auto-select single business
         const businessId = data.business_ids[0].id;
         const role = data.business_ids[0].role;
 
@@ -89,7 +88,6 @@ export default function LoginPage() {
 
       toast.success("Login successful!");
 
-      // Use window.location for full page navigation
       setTimeout(() => {
         window.location.href = redirectPath;
       }, 500);
@@ -103,55 +101,123 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-clinic-bg px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Clinic Management</CardTitle>
-          <CardDescription>Enter your credentials to log in</CardDescription>
-        </CardHeader>
+    <div className="min-h-screen flex">
+      {/* Left Section - Hero */}
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-primary-600 via-primary-500 to-primary-700 text-white flex-col justify-between p-12 relative overflow-hidden">
+        {/* Background pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-white rounded-full blur-3xl"></div>
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <Input
-              label="Email"
-              type="email"
-              name="email"
-              placeholder="your@email.com"
-              value={formData.email}
-              onChange={handleChange}
-              error={errors.email}
-              required
-              disabled={isLoading}
-            />
+        {/* Content */}
+        <div className="relative z-10">
+          <div className="flex items-center gap-3 mb-8">
+            <div className="w-12 h-12 bg-white/20 backdrop-blur-lg rounded-xl flex items-center justify-center">
+              <ClipboardDocumentListIcon className="w-6 h-6 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold">My Clinic</h1>
+          </div>
 
-            <Input
-              label="Password"
-              type="password"
-              name="password"
-              placeholder="Enter your password"
-              value={formData.password}
-              onChange={handleChange}
-              error={errors.password}
-              required
-              disabled={isLoading}
-            />
-          </CardContent>
+          <h2 className="text-4xl font-bold mb-4 leading-tight">
+            Streamline Your Clinic Operations
+          </h2>
+          <p className="text-primary-100 text-lg mb-8 leading-relaxed">
+            Manage appointments, track patient visits, and handle queue management efficiently
+          </p>
 
-          <CardFooter>
-            <Button
-              type="submit"
-              variant="primary"
-              size="lg"
-              fullWidth
-              isLoading={isLoading}
-              disabled={isLoading}
-            >
-              {isLoading ? "Logging in..." : "Log In"}
-            </Button>
-          </CardFooter>
-        </form>
+          {/* Features */}
+          <div className="space-y-4">
+            {[
+              { icon: CheckCircleIcon, label: "Easy Queue Management" },
+              { icon: SparklesIcon, label: "Real-time Doctor Dashboard" },
+              { icon: ClipboardDocumentListIcon, label: "Comprehensive Visit Documentation" },
+            ].map(({ icon: Icon, label }) => (
+              <div key={label} className="flex items-center gap-3">
+                <Icon className="w-5 h-5 text-primary-200 flex-shrink-0" />
+                <span className="text-primary-100">{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
 
-      </Card>
+        {/* Footer text */}
+        <div className="relative z-10">
+          <p className="text-primary-200 text-sm">
+            Trusted by clinics worldwide
+          </p>
+        </div>
+      </div>
+
+      {/* Right Section - Form */}
+      <div className="w-full lg:w-1/2 flex flex-col items-center justify-center px-6 py-12 bg-slate-50">
+        <div className="w-full max-w-md">
+          {/* Mobile header */}
+          <div className="lg:hidden mb-8">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-10 h-10 bg-primary-600 rounded-lg flex items-center justify-center">
+                <ClipboardDocumentListIcon className="w-5 h-5 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold text-slate-900">My Clinic</h1>
+            </div>
+            <p className="text-slate-600">Clinic Management System</p>
+          </div>
+
+          {/* Form Card */}
+          <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                Welcome Back
+              </h2>
+              <p className="text-slate-600">
+                Sign in to your account to continue
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <Input
+                label="Email Address"
+                type="email"
+                name="email"
+                placeholder="your@email.com"
+                value={formData.email}
+                onChange={handleChange}
+                error={errors.email}
+                required
+                disabled={isLoading}
+              />
+
+              <Input
+                label="Password"
+                type="password"
+                name="password"
+                placeholder="Enter your password"
+                value={formData.password}
+                onChange={handleChange}
+                error={errors.password}
+                required
+                disabled={isLoading}
+              />
+
+              <Button
+                type="submit"
+                variant="primary"
+                size="lg"
+                fullWidth
+                isLoading={isLoading}
+                disabled={isLoading}
+              >
+                {isLoading ? "Signing in..." : "Sign In"}
+              </Button>
+            </form>
+          </div>
+
+          {/* Footer */}
+          <p className="text-center text-xs text-slate-500 mt-8">
+            A modern clinic management solution
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
