@@ -20,9 +20,17 @@ export function formatDate(date: Date | string): string {
 
 /**
  * Format date as readable format (e.g., "May 9, 2026")
+ * Parses YYYY-MM-DD strings as local dates, not UTC
  */
 export function formatDateReadable(date: Date | string): string {
-  const dateObj = typeof date === "string" ? new Date(date) : date;
+  let dateObj: Date;
+  if (typeof date === "string") {
+    // Parse YYYY-MM-DD as a local date, not UTC
+    const [year, month, day] = date.split("-").map(Number);
+    dateObj = new Date(year, month - 1, day); // month is 0-indexed
+  } else {
+    dateObj = date;
+  }
   return format(dateObj, "MMM d, yyyy");
 }
 

@@ -47,7 +47,7 @@ export function PatientSearchCombobox({
           throw new Error("Search failed");
         }
         const data = await response.json();
-        setResults(data);
+        setResults(data.data || []);
         setShowDropdown(true);
       } catch (error) {
         setResults([]);

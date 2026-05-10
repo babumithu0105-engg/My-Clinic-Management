@@ -811,37 +811,38 @@ const useFetch = (endpoint, options = {}) => {
 
 ## Phasing & Milestones
 
-### Phase 1 Milestone 1: Auth & Setup (Week 1)
-- [ ] GitHub repo created
-- [ ] Next.js project initialized
-- [ ] Supabase connected (India region)
-- [ ] Database tables created
-- [ ] Login/logout working
-- [ ] Business selector working
-- [ ] Role-based redirects working
+### Phase 1 Milestone 1: Auth & Setup (Week 1) ✅ COMPLETED
+- [x] GitHub repo created
+- [x] Next.js project initialized
+- [x] Supabase connected (India region)
+- [x] Database tables created
+- [x] Login/logout working
+- [x] Business selector working
+- [x] Role-based redirects working
 
-### Phase 1 Milestone 2: Patient & Appointment Management (Week 2)
-- [ ] Add patient
-- [ ] Search patient
-- [ ] View patient details
-- [ ] Book appointment (with slot calculation)
-- [ ] Reschedule/cancel appointment
-- [ ] Available slots endpoint working
+### Phase 1 Milestone 2: Patient & Appointment Management (Week 2) ✅ COMPLETED
+- [x] Add patient
+- [x] Search patient
+- [x] View patient details
+- [x] Book appointment (with slot calculation)
+- [x] Reschedule/cancel appointment
+- [x] Available slots endpoint working
 
-### Phase 1 Milestone 3: Queue & Doctor Workflow (Week 2-3)
-- [ ] Queue display (booked + walk-in)
-- [ ] Add walk-in
-- [ ] Send patient to doctor
-- [ ] Check-in patient
-- [ ] Document visit (structured + free-text)
-- [ ] Complete visit
-- [ ] Patient history view
+### Phase 1 Milestone 3: Queue & Doctor Workflow (Week 2-3) ✅ COMPLETED
+- [x] Queue display (booked + walk-in)
+- [x] Add walk-in
+- [x] Send patient to doctor
+- [x] Check-in patient
+- [x] Document visit (structured + free-text)
+- [x] Complete visit
+- [x] Patient history view
 
 ### Phase 1 Milestone 4: Admin Configuration (Week 3)
-- [ ] Working hours per day
-- [ ] Holidays management
+- [x] Business name/info management (name, phone, email, address)
+- [x] Working hours per day
+- [x] Holidays management
 - [ ] Doctor unavailability
-- [ ] Visit field customization
+- [x] Visit field customization
 - [ ] User management (create, edit, delete)
 
 ### Phase 1 Milestone 5: Polish & Testing (Week 3-4)

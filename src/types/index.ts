@@ -129,6 +129,15 @@ export interface WorkingHours {
   end_time?: string; // HH:MM format
 }
 
+// Business configuration (appointment durations, etc.)
+export interface BusinessConfig {
+  id: string;
+  business_id: string;
+  appointment_duration_options: string[]; // ["15","30","45"]
+  created_at?: string;
+  updated_at?: string;
+}
+
 // Health check response
 export interface HealthCheckResponse {
   status: "ok" | "error";

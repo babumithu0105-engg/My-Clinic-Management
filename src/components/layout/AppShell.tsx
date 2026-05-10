@@ -9,10 +9,15 @@ import { useBusiness } from "@/context/BusinessProvider";
 import { Button } from "@/components/ui/Button";
 import {
   QueueListIcon,
-  CogIcon,
   ArrowLeftOnRectangleIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/solid";
+import {
+  BuildingOfficeIcon,
+  ClockIcon,
+  CalendarDaysIcon,
+  DocumentTextIcon,
+} from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
 
 interface NavItem {
@@ -42,9 +47,27 @@ const NAV_ITEMS: NavItem[] = [
     roles: ["doctor"],
   },
   {
-    label: "Config",
-    href: "/admin",
-    icon: <CogIcon className="h-5 w-5" />,
+    label: "Business Info",
+    href: "/admin/business",
+    icon: <BuildingOfficeIcon className="h-5 w-5" />,
+    roles: ["admin"],
+  },
+  {
+    label: "Working Hours",
+    href: "/admin/working-hours",
+    icon: <ClockIcon className="h-5 w-5" />,
+    roles: ["admin"],
+  },
+  {
+    label: "Holidays",
+    href: "/admin/holidays",
+    icon: <CalendarDaysIcon className="h-5 w-5" />,
+    roles: ["admin"],
+  },
+  {
+    label: "Visit Fields",
+    href: "/admin/visit-fields",
+    icon: <DocumentTextIcon className="h-5 w-5" />,
     roles: ["admin"],
   },
 ];

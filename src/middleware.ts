@@ -91,6 +91,7 @@ export const config = {
     "/api/appointments/:path*",
     "/api/visits/:path*",
     "/api/queue/:path*",
+    "/api/admin/:path*",
     "/api/config/:path*",
     "/api/users/:path*",
     "/api/auth/logout",

@@ -27,7 +27,7 @@ export default function PatientsPage() {
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
   const [openAddForm, setOpenAddForm] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
+  const [, setSelectedPatient] = useState<Patient | null>(null);
   const [patientDetails, setPatientDetails] = useState<(Patient & { appointments?: AppointmentWithPatient[] }) | null>(null);
   const [openDetails, setOpenDetails] = useState(false);
 
@@ -93,18 +93,10 @@ export default function PatientsPage() {
     }
   };
 
-  const handlePatientSuccess = async (patient: Patient) => {
+  const handlePatientSuccess = async () => {
     setOpenAddForm(false);
     // Reload the first page to show the new patient
     loadPatients(1);
-  };
-
-  const handleUpdateSuccess = () => {
-    setOpenDetails(false);
-    setSelectedPatient(null);
-    setPatientDetails(null);
-    // Reload current page to show updates
-    loadPatients(currentPage, search);
   };
 
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
@@ -217,7 +209,7 @@ export default function PatientsPage() {
       <PatientForm
         open={openAddForm}
         onOpenChange={setOpenAddForm}
-        onSuccess={(patient) => handlePatientSuccess(patient)}
+        onSuccess={() => handlePatientSuccess()}
       />
 
       {/* Patient Details Sheet */}
