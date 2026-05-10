@@ -75,8 +75,6 @@ test.describe("Authentication", () => {
     // Only fill password
     await page.fill('input[type="password"]', "testpass123");
 
-    const submitButton = page.locator('button[type="submit"]');
-
     // Button should be disabled or form should not submit
     const emailInput = page.locator('input[type="email"]');
     const isInvalid = await emailInput.evaluate((el: HTMLInputElement) =>

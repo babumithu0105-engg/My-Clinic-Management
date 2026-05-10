@@ -1,4 +1,4 @@
-import { chromium, FullConfig } from "@playwright/test";
+import { chromium } from "@playwright/test";
 import * as fs from "fs";
 import * as path from "path";
 
@@ -11,7 +11,7 @@ async function loginAndSaveState(
   role: string
 ) {
   const browser = await chromium.launch();
-  const context = await browser.createContext();
+  const context = await browser.newContext();
   const page = await context.newPage();
 
   try {
@@ -26,12 +26,13 @@ async function loginAndSaveState(
     await page.click('button[type="submit"]');
 
     // Wait for navigation (redirect happens after login)
-    await page.waitForURL((url) => {
+    await page.waitForURL((url: URL) => {
+      const urlStr = url.toString();
       return (
-        url.toString().includes("/receptionist") ||
-        url.toString().includes("/doctor") ||
-        url.toString().includes("/admin") ||
-        url.toString().includes("/select-business")
+        urlStr.includes("/receptionist") ||
+        urlStr.includes("/doctor") ||
+        urlStr.includes("/admin") ||
+        urlStr.includes("/select-business")
       );
     });
 
@@ -58,8 +59,8 @@ async function loginAndSaveState(
   }
 }
 
-async function globalSetup(config: FullConfig) {
-  const baseURL = config.use.baseURL || "http://localhost:3000";
+async function globalSetup() {
+  const baseURL = "http://localhost:3000";
 
   console.log("🔐 Setting up authentication for all roles...\n");
 

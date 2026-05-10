@@ -1,7 +1,7 @@
 import { test, expect } from "../fixtures";
 
 test.describe("Receptionist - Queue Management", () => {
-  test.beforeEach(async ({ page, context }) => {
+  test.beforeEach(async ({ page }) => {
     // Navigate to receptionist dashboard
     await page.goto("/receptionist");
 
@@ -22,7 +22,7 @@ test.describe("Receptionist - Queue Management", () => {
     await expect(scheduleTab).toBeVisible();
   });
 
-  test("should add a walk-in patient", async ({ page, context }) => {
+  test("should add a walk-in patient", async ({ page }) => {
     // First, create a patient to use for walk-in
     // Navigate to patients page
     await page.goto("/receptionist/patients");

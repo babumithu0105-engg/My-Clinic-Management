@@ -2,7 +2,6 @@ import { test, expect } from "../fixtures";
 import { format, addDays } from "date-fns";
 
 test.describe("Receptionist - Appointments", () => {
-  let patientId: string;
   let patientName: string;
 
   test.beforeEach(async ({ page }) => {
@@ -19,7 +18,6 @@ test.describe("Receptionist - Appointments", () => {
 
     if (response.ok()) {
       const data = await response.json();
-      patientId = data.id;
       patientName = data.name;
     }
 

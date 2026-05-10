@@ -196,11 +196,6 @@ test.describe("Admin - Visit Fields Configuration", () => {
       const isDisabled = await moveDownBtn.isDisabled();
 
       if (!isDisabled) {
-        // Get field list before
-        const fieldsBefore = await page
-          .locator('[class*="field"], [class*="list"] >> [class*="card"]')
-          .count();
-
         // Click move down
         await moveDownBtn.click();
 

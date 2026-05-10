@@ -2,7 +2,7 @@ import { test, expect } from "../fixtures";
 import { format } from "date-fns";
 
 test.describe("Doctor - Visit Workflow", () => {
-  test.beforeEach(async ({ page, context }) => {
+  test.beforeEach(async ({ page }) => {
     // Navigate to doctor dashboard
     await page.goto("/doctor");
   });
@@ -13,7 +13,7 @@ test.describe("Doctor - Visit Workflow", () => {
     await expect(heading).toBeVisible();
   });
 
-  test("should show checked-in patients", async ({ page, context }) => {
+  test("should show checked-in patients", async ({ page }) => {
     // Create a test patient and appointment, then send to doctor
     // First create patient
     const patientResponse = await page.request.post("/api/patients", {
