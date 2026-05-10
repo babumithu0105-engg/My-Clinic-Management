@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthProvider";
-import { useBusiness } from "@/context/BusinessProvider";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -99,7 +98,7 @@ export default function HolidaysAdmin() {
     }
   };
 
-  const handleDelete = async (holidayId: string, date: string) => {
+  const handleDelete = async (holidayId: string) => {
     try {
       const response = await fetch(`/api/admin/holidays/${holidayId}`, {
         method: "DELETE",
@@ -177,7 +176,7 @@ export default function HolidaysAdmin() {
                   </div>
 
                   <ConfirmInline
-                    onConfirm={() => handleDelete(holiday.id, holiday.holiday_date)}
+                    onConfirm={() => handleDelete(holiday.id)}
                     title="Delete Holiday"
                     description={`Remove ${formatDateReadable(holiday.holiday_date)} from closed dates?`}
                     isDangerous

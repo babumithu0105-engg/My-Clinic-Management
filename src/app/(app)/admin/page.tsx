@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useAuth } from "@/context/AuthProvider";
-import { useBusiness } from "@/context/BusinessProvider";
 import { PageHeader } from "@/components/layout/PageHeader";
 import {
   BuildingOfficeIcon,
@@ -13,7 +12,6 @@ import {
 
 export default function AdminDashboard() {
   const { user } = useAuth();
-  const { business_id, role } = useBusiness();
 
   if (!user) {
     return <div className="p-4">Loading...</div>;

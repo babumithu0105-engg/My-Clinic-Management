@@ -3,7 +3,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useAuth } from "@/context/AuthProvider";
 import { useBusiness } from "@/context/BusinessProvider";
-import { toast } from "sonner";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
@@ -16,13 +15,12 @@ import type { AppointmentWithPatient, QueueResponse } from "@/types";
 
 export default function DoctorDashboard() {
   const { user } = useAuth();
-  const { business_id, role } = useBusiness();
+  const { role } = useBusiness();
 
   const [queue, setQueue] = useState<QueueResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedAppointment, setSelectedAppointment] = useState<AppointmentWithPatient | null>(null);
   const [openVisitSheet, setOpenVisitSheet] = useState(false);
-  const [autoRefreshInterval, setAutoRefreshInterval] = useState<NodeJS.Timeout | null>(null);
 
   // Load queue (today, auto-filtered to checked-in)
   const loadQueue = useCallback(async () => {
@@ -61,8 +59,6 @@ export default function DoctorDashboard() {
     const interval = setInterval(() => {
       loadQueue();
     }, 30000);
-
-    setAutoRefreshInterval(interval);
 
     return () => {
       if (interval) clearInterval(interval);

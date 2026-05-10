@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthProvider";
-import { useBusiness } from "@/context/BusinessProvider";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -22,10 +21,9 @@ interface BusinessData {
 
 export default function BusinessInfoAdmin() {
   const { user } = useAuth();
-  const { business_id } = useBusiness();
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [business, setBusiness] = useState<BusinessData | null>(null);
+  const [, setBusiness] = useState<BusinessData | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     phone: "",

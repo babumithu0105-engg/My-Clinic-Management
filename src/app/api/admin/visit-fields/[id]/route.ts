@@ -32,14 +32,13 @@ export async function PUT(
     if (body.action === "move_up" || body.action === "move_down") {
       const direction = body.action === "move_up" ? -1 : 1;
       const operator = direction === -1 ? "<" : ">";
-      const orderBy = direction === -1 ? "field_order" : "field_order";
 
       // Get the adjacent field to swap with
       const { data: adjacentFields, error: adjacentError } = await supabaseServer
         .from("visit_documentation_fields")
         .select("*")
         .eq("business_id", context.business_id)
-        .filter(`field_order ${operator} ${field.field_order}`)
+        .filter("field_order", operator as any, field.field_order)
         .order("field_order", { ascending: direction === 1 })
         .limit(1);
 

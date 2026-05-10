@@ -20,7 +20,7 @@ type TabType = "queue" | "schedule";
 
 export default function ReceptionistDashboard() {
   const { user } = useAuth();
-  const { business_id, role } = useBusiness();
+  const { role } = useBusiness();
   const [activeTab, setActiveTab] = useState<TabType>("queue");
 
   // Queue state

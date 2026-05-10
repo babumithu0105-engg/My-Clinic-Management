@@ -5,7 +5,8 @@ import { Button } from "./Button";
 import { clsx } from "clsx";
 
 export interface ConfirmInlineProps {
-  trigger: React.ReactNode;
+  trigger?: React.ReactNode;
+  children?: React.ReactNode;
   title: string;
   description?: string;
   confirmText?: string;
@@ -13,12 +14,14 @@ export interface ConfirmInlineProps {
   onConfirm: () => Promise<void> | void;
   isDangerous?: boolean;
   isLoading?: boolean;
+  disabled?: boolean;
 }
 
 const ConfirmInline = React.forwardRef<HTMLDivElement, ConfirmInlineProps>(
   (
     {
       trigger,
+      children,
       title,
       description,
       confirmText = "Confirm",
@@ -26,6 +29,7 @@ const ConfirmInline = React.forwardRef<HTMLDivElement, ConfirmInlineProps>(
       onConfirm,
       isDangerous = true,
       isLoading = false,
+      disabled = false,
     },
     ref
   ) => {
@@ -46,10 +50,10 @@ const ConfirmInline = React.forwardRef<HTMLDivElement, ConfirmInlineProps>(
       return (
         <div
           ref={ref}
-          onClick={() => setIsOpen(true)}
-          className="cursor-pointer"
+          onClick={() => !disabled && setIsOpen(true)}
+          className={disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"}
         >
-          {trigger}
+          {trigger || children}
         </div>
       );
     }

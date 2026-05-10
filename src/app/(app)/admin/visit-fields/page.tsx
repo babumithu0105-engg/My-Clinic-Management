@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { useAuth } from "@/context/AuthProvider";
-import { useBusiness } from "@/context/BusinessProvider";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/Card";
 import { Button } from "@/components/ui/Button";
@@ -32,9 +31,14 @@ export default function VisitFieldsAdmin() {
   const [openSheet, setOpenSheet] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [fields, setFields] = useState<VisitField[]>([]);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    field_name: string;
+    field_type: "text" | "dropdown" | "checkbox" | "date" | "number";
+    is_required: boolean;
+    dropdown_options: string;
+  }>({
     field_name: "",
-    field_type: "text" as const,
+    field_type: "text",
     is_required: false,
     dropdown_options: "",
   });
@@ -180,7 +184,7 @@ export default function VisitFieldsAdmin() {
     }
   };
 
-  const handleDelete = async (fieldId: string, fieldName: string) => {
+  const handleDelete = async (fieldId: string) => {
     try {
       const response = await fetch(`/api/admin/visit-fields/${fieldId}`, {
         method: "DELETE",
@@ -198,16 +202,6 @@ export default function VisitFieldsAdmin() {
     }
   };
 
-  const getTypeBadgeVariant = (type: string) => {
-    const variants: Record<string, any> = {
-      text: "default",
-      dropdown: "info",
-      checkbox: "default",
-      date: "default",
-      number: "default",
-    };
-    return variants[type] || "default";
-  };
 
   if (!user) {
     return <div className="p-4">Loading...</div>;
@@ -304,7 +298,7 @@ export default function VisitFieldsAdmin() {
                     </button>
 
                     <ConfirmInline
-                      onConfirm={() => handleDelete(field.id, field.field_name)}
+                      onConfirm={() => handleDelete(field.id)}
                       title="Delete Field"
                       description={`Remove "${field.field_name}" from documentation?`}
                       isDangerous

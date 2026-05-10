@@ -2,7 +2,7 @@ import { NextRequest } from "next/server";
 import { supabaseServer } from "@/lib/supabase/server";
 import { extractUserContext, validateRole } from "@/lib/api/middleware-helpers";
 import { Errors, errorResponse, successResponse } from "@/lib/api/errors";
-import { CreatePatientSchema, SearchPatientSchema } from "@/lib/validations/patient";
+import { CreatePatientSchema } from "@/lib/validations/patient";
 import type { Patient } from "@/types";
 
 // GET /api/patients?search=<query>&skip=0&limit=10

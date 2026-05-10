@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useBusiness } from "@/context/BusinessProvider";
 import {
   Sheet,
   SheetContent,
@@ -35,7 +34,6 @@ export function BookingForm({
   initialData,
   onSuccess,
 }: BookingFormProps) {
-  const { business_id } = useBusiness();
   const [isLoading, setIsLoading] = useState(false);
   const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
   const [date, setDate] = useState(getCurrentDate());

@@ -3,9 +3,7 @@
 import * as React from "react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/Sheet";
 import { Button } from "@/components/ui/Button";
-import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
-import { Select } from "@/components/ui/Select";
 import { PatientSearchCombobox } from "@/components/patients/PatientSearchCombobox";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -95,26 +93,30 @@ export function WalkInForm({ open, onOpenChange, onSuccess }: WalkInFormProps) {
               Patient <span className="text-red-600">*</span>
             </label>
             <PatientSearchCombobox
-              value={patientId}
-              onSelect={setPatientId}
+              onSelect={(patient) => setPatientId(patient.id)}
               placeholder="Search or add patient..."
             />
           </div>
 
           {/* Duration */}
-          <Select
-            label="Duration (minutes)"
-            value={duration}
-            onChange={(e) => setDuration(e.target.value)}
-            required
-          >
+          <div>
+            <label className="text-sm font-medium text-slate-700 block mb-2">
+              Duration (minutes) <span className="text-red-600">*</span>
+            </label>
+            <select
+              value={duration}
+              onChange={(e) => setDuration(e.target.value)}
+              required
+              className="w-full px-3 py-2 border border-slate-300 rounded-md"
+            >
             <option value="">Select duration</option>
             {durations.map((d) => (
               <option key={d} value={d}>
                 {d} minutes
               </option>
             ))}
-          </Select>
+            </select>
+          </div>
 
           {/* Notes */}
           <Textarea

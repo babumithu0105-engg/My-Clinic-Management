@@ -9,7 +9,6 @@ import { useBusiness } from "@/context/BusinessProvider";
 import { Button } from "@/components/ui/Button";
 import {
   QueueListIcon,
-  CogIcon,
   ArrowLeftOnRectangleIcon,
   UserGroupIcon,
 } from "@heroicons/react/24/solid";

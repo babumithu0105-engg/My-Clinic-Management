@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { toast } from "sonner";
-import { useBusiness } from "@/context/BusinessProvider";
 import {
   Sheet,
   SheetContent,
@@ -31,7 +30,6 @@ export function PatientForm({
   initialData,
   onSuccess,
 }: PatientFormProps) {
-  const { business_id } = useBusiness();
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [formData, setFormData] = useState({

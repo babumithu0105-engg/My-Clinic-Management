@@ -13,6 +13,7 @@ interface DatePickerProps {
   error?: string;
   helperText?: string;
   disabled?: boolean;
+  required?: boolean;
   min?: string;
   placeholder?: string;
 }
@@ -24,6 +25,7 @@ export function DatePicker({
   error,
   helperText,
   disabled = false,
+  required = false,
   min,
   placeholder = "Select a date",
 }: DatePickerProps) {
@@ -46,7 +48,10 @@ export function DatePicker({
   return (
     <div className="space-y-2">
       {label && (
-        <label className="text-sm font-medium text-slate-700">{label}</label>
+        <label className="text-sm font-medium text-slate-700">
+          {label}
+          {required && <span className="text-red-600 ml-1">*</span>}
+        </label>
       )}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
