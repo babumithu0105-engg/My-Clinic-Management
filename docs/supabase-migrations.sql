@@ -59,12 +59,14 @@ CREATE TABLE patients (
   age INT,
   sex VARCHAR(10),
   address TEXT,
+  status VARCHAR(20) NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
   created_at TIMESTAMP DEFAULT NOW(),
   updated_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE INDEX idx_patients_business_phone ON patients(business_id, phone_number);
 CREATE INDEX idx_patients_business_name ON patients(business_id, name);
+CREATE INDEX idx_patients_status ON patients(business_id, status);
 
 -- ============================================================================
 -- 5. APPOINTMENTS TABLE
@@ -362,7 +364,7 @@ CREATE POLICY doctor_unavailability_deny_anon_insert ON doctor_unavailability
 COMMENT ON TABLE businesses IS 'Clinic/practice entities - top-level multi-tenant unit';
 COMMENT ON TABLE users IS 'User accounts - can belong to multiple businesses with different roles';
 COMMENT ON TABLE business_users IS 'Junction table mapping users to businesses with their role in each business';
-COMMENT ON TABLE patients IS 'Patient records - completely isolated per business';
+COMMENT ON TABLE patients IS 'Patient records - completely isolated per business. Status can be active or inactive.';
 COMMENT ON TABLE appointments IS 'Scheduled appointments and walk-ins - linked to patient and business';
 COMMENT ON TABLE visits IS 'Doctor visit documentation - one visit per appointment';
 COMMENT ON TABLE visit_documentation_fields IS 'Configurable fields that doctors fill in during visits - per business';

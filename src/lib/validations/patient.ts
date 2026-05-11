@@ -6,6 +6,7 @@ export const CreatePatientSchema = z.object({
   age: z.number().int().positive("Age must be a positive number").nullable().optional(),
   sex: z.enum(["M", "F", "Other"]).nullable().optional(),
   address: z.string().max(500).nullable().optional(),
+  status: z.enum(["active", "inactive"]).optional(),
 });
 
 export const UpdatePatientSchema = CreatePatientSchema.partial();

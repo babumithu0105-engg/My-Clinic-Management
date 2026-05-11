@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { PatientSearchCombobox } from "@/components/patients/PatientSearchCombobox";
@@ -193,21 +194,20 @@ export function BookingForm({
 
   return (
     <Sheet open={open} onOpenChange={handleClose}>
-      <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-        <div className="px-6">
-          <SheetHeader className="mb-6">
-            <SheetTitle className="text-xl">{title}</SheetTitle>
-            <SheetDescription>
-              {isEditMode ? "Change the appointment date or time" : "Select a patient and available time slot"}
-            </SheetDescription>
-          </SheetHeader>
+      <SheetContent className="w-full sm:max-w-md flex flex-col">
+        <SheetHeader>
+          <SheetTitle>{title}</SheetTitle>
+          <SheetDescription>
+            {isEditMode ? "Change the appointment date or time" : "Select a patient and available time slot"}
+          </SheetDescription>
+        </SheetHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {/* Patient */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">
-                Patient {!isEditMode && "*"}
-              </label>
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto sheet-scrollable px-6 py-6 space-y-5">
+          {/* Patient */}
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700">
+              Patient {!isEditMode && <span className="text-red-500 ml-0.5">*</span>}
+            </label>
               {selectedPatient ? (
                 <div className="px-3 py-2.5 border border-clinic-border rounded-lg bg-slate-50 text-slate-900 flex items-center justify-between">
                   <div>
@@ -231,111 +231,110 @@ export function BookingForm({
                   placeholder="Search patient..."
                 />
               )}
-            </div>
+          </div>
 
-            {/* Date */}
-            <Input
-              label="Appointment Date *"
-              type="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-              min={getCurrentDate()}
-              disabled={isLoading}
-            />
+          {/* Date */}
+          <Input
+            label="Appointment Date *"
+            type="date"
+            value={date}
+            onChange={(e) => setDate(e.target.value)}
+            min={getCurrentDate()}
+            disabled={isLoading}
+          />
 
-            {/* Duration */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">
-                Duration (minutes) *
-              </label>
-              <select
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-                disabled={isLoading}
-                className="w-full px-3 py-2.5 border border-clinic-border rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:bg-slate-50 appearance-none bg-white"
-              >
+          {/* Duration */}
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700">
+              Duration (minutes) <span className="text-red-500 ml-0.5">*</span>
+            </label>
+            <Select value={duration} onValueChange={setDuration} disabled={isLoading}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select duration" />
+              </SelectTrigger>
+              <SelectContent>
                 {durationOptions.map((opt) => (
-                  <option key={opt} value={opt}>
+                  <SelectItem key={opt} value={opt}>
                     {opt} minutes
-                  </option>
+                  </SelectItem>
                 ))}
-              </select>
-            </div>
+              </SelectContent>
+            </Select>
+          </div>
 
-            {/* Time Slots */}
-            <div className="space-y-2">
-              <label className="text-sm font-medium text-slate-700">
-                Select Time *
-              </label>
-              {!selectedPatient ? (
-                <div className="p-3 bg-slate-50 border border-clinic-border rounded-lg text-sm text-slate-500 text-center">
-                  Select a patient first
-                </div>
-              ) : slotsLoading ? (
-                <div className="space-y-2">
-                  <Skeleton className="h-10" />
-                  <Skeleton className="h-10" />
-                  <Skeleton className="h-10" />
-                </div>
-              ) : slots.length === 0 ? (
-                <EmptyState
-                  title="No slots available"
-                  description={`No available times for ${formatDateReadable(date)}`}
-                />
-              ) : (
-                <div className="grid grid-cols-3 gap-2">
-                  {slots.map((slot) => (
-                    <button
-                      key={slot}
-                      type="button"
-                      onClick={() => setSelectedTime(slot)}
-                      disabled={isLoading}
-                      className={`p-2 rounded border transition-colors text-sm font-medium ${
-                        selectedTime === slot
-                          ? "bg-primary-500 text-white border-primary-500"
-                          : "bg-white border-clinic-border text-slate-900 hover:bg-slate-50"
-                      } disabled:opacity-50`}
-                    >
-                      {formatTime12h(slot)}
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
+          {/* Time Slots */}
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700">
+              Select Time <span className="text-red-500 ml-0.5">*</span>
+            </label>
+            {!selectedPatient ? (
+              <div className="p-3 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-500 text-center">
+                Select a patient first
+              </div>
+            ) : slotsLoading ? (
+              <div className="space-y-2">
+                <Skeleton className="h-10" />
+                <Skeleton className="h-10" />
+                <Skeleton className="h-10" />
+              </div>
+            ) : slots.length === 0 ? (
+              <EmptyState
+                title="No slots available"
+                description={`No available times for ${formatDateReadable(date)}`}
+              />
+            ) : (
+              <div className="grid grid-cols-3 gap-2">
+                {slots.map((slot) => (
+                  <button
+                    key={slot}
+                    type="button"
+                    onClick={() => setSelectedTime(slot)}
+                    disabled={isLoading}
+                    className={`p-2.5 rounded-lg border transition-colors text-sm font-medium ${
+                      selectedTime === slot
+                        ? "bg-primary-500 text-white border-primary-500"
+                        : "bg-white border-slate-300 text-slate-900 hover:bg-slate-50"
+                    } disabled:opacity-50`}
+                  >
+                    {formatTime12h(slot)}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
 
-            {/* Notes */}
-            <Textarea
-              label="Notes"
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="Any additional notes (optional)"
+          {/* Notes */}
+          <Textarea
+            label="Notes"
+            value={notes}
+            onChange={(e) => setNotes(e.target.value)}
+            placeholder="Any additional notes (optional)"
+            disabled={isLoading}
+            rows={3}
+          />
+
+          {/* Footer */}
+          <SheetFooter>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => onOpenChange(false)}
               disabled={isLoading}
-              rows={3}
-            />
-
-            {/* Footer */}
-            <SheetFooter className="pt-6 mt-8 border-t border-clinic-border gap-2 flex-row">
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={() => onOpenChange(false)}
-                disabled={isLoading}
-                fullWidth
-              >
-                Cancel
-              </Button>
-              <Button
-                type="submit"
-                variant="primary"
-                isLoading={isLoading}
-                disabled={isLoading || !selectedPatient || !selectedTime}
-                fullWidth
-              >
-                {isEditMode ? "Reschedule" : "Book"} Appointment
-              </Button>
-            </SheetFooter>
-          </form>
-        </div>
+              fullWidth
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              variant="primary"
+              isLoading={isLoading}
+              disabled={isLoading || !selectedPatient || !selectedTime}
+              fullWidth
+            >
+              {isEditMode ? "Reschedule" : "Book"} Appointment
+            </Button>
+          </SheetFooter>
+        </form>
       </SheetContent>
     </Sheet>
   );

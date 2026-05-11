@@ -109,7 +109,7 @@ export default function BusinessInfoAdmin() {
   };
 
   if (!user) {
-    return <LoadingOverlay message="Loading your dashboard..." />;
+    return <LoadingOverlay message="Loading..." />;
   }
 
   return (

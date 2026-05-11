@@ -205,7 +205,7 @@ export default function VisitFieldsAdmin() {
 
 
   if (!user) {
-    return <LoadingOverlay message="Loading your dashboard..." />;
+    return <LoadingOverlay message="Loading..." />;
   }
 
   return (

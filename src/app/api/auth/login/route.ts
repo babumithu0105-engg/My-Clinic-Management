@@ -3,13 +3,16 @@ import { supabaseServer } from "@/lib/supabase/server";
 import { verifyPassword } from "@/lib/auth/password";
 import { signJWT } from "@/lib/auth/jwt";
 import { setAuthCookie } from "@/lib/auth/session";
-import { Errors, errorResponse } from "@/lib/api/errors";
+import { Errors, APIException, errorResponse } from "@/lib/api/errors";
 import { isValidEmail } from "@/lib/utils";
 
 /**
  * POST /api/auth/login
  * Authenticate user with email and password
  * Returns JWT token and user info
+ *
+ * NOTE: Credentials must NEVER be passed in query strings.
+ * Only POST with body is supported.
  */
 
 interface LoginRequest {
@@ -25,6 +28,12 @@ interface LoginResponse {
   };
   business_ids: Array<{ id: string; role: string }>;
   token: string;
+}
+
+export async function GET() {
+  return errorResponse(
+    new APIException("METHOD_NOT_ALLOWED", "Login requires POST request with email and password in body", 405)
+  );
 }
 
 export async function POST(request: NextRequest) {

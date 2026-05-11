@@ -94,6 +94,7 @@ export function PatientSearchCombobox({
               {results.map((patient) => (
                 <button
                   key={patient.id}
+                  type="button"
                   onClick={() => handleSelect(patient)}
                   className="w-full text-left px-4 py-3 hover:bg-primary-50 border-b border-clinic-border last:border-b-0 transition-colors"
                 >
@@ -112,6 +113,7 @@ export function PatientSearchCombobox({
                 description={`No patients match "${search}"`}
                 action={
                   <Button
+                    type="button"
                     variant="primary"
                     size="sm"
                     onClick={() => {

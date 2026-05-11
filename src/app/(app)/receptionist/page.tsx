@@ -89,7 +89,7 @@ export default function ReceptionistDashboard() {
   }, [loadAppointments]);
 
   if (!user) {
-    return <LoadingOverlay message="Loading your dashboard..." />;
+    return <LoadingOverlay message="Loading..." />;
   }
 
   const handleBookingSuccess = () => {

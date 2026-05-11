@@ -15,7 +15,7 @@ export default function AdminDashboard() {
   const { user } = useAuth();
 
   if (!user) {
-    return <LoadingOverlay message="Loading your dashboard..." />;
+    return <LoadingOverlay message="Loading..." />;
   }
 
   return (

@@ -13,6 +13,7 @@ import {
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import type { Patient } from "@/types";
 
 interface PatientFormProps {
@@ -38,6 +39,7 @@ export function PatientForm({
     age: initialData?.age || "",
     sex: initialData?.sex || "",
     address: initialData?.address || "",
+    status: (initialData?.status as "active" | "inactive") || "active",
   });
 
   useEffect(() => {
@@ -48,6 +50,7 @@ export function PatientForm({
         age: initialData.age?.toString() || "",
         sex: initialData.sex || "",
         address: initialData.address || "",
+        status: (initialData.status as "active" | "inactive") || "active",
       });
     }
   }, [initialData, open]);
@@ -110,6 +113,7 @@ export function PatientForm({
         age: formData.age ? Number(formData.age) : null,
         sex: formData.sex || null,
         address: formData.address || null,
+        ...(isEditMode && { status: formData.status }),
       };
 
       const response = await fetch(url, {
@@ -139,16 +143,15 @@ export function PatientForm({
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-md overflow-y-auto">
-        <div className="px-6">
-          <SheetHeader className="mb-6">
-            <SheetTitle className="text-xl">{title}</SheetTitle>
-            <SheetDescription>
-              {isEditMode ? "Update patient information" : "Add a new patient to the system"}
-            </SheetDescription>
-          </SheetHeader>
+      <SheetContent className="w-full sm:max-w-md flex flex-col">
+        <SheetHeader>
+          <SheetTitle>{title}</SheetTitle>
+          <SheetDescription>
+            {isEditMode ? "Update patient information" : "Add a new patient to the system"}
+          </SheetDescription>
+        </SheetHeader>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto sheet-scrollable px-6 py-6 space-y-5">
           <Input
             label="Name *"
             name="name"
@@ -180,21 +183,34 @@ export function PatientForm({
             disabled={isLoading}
           />
 
-          <div className="space-y-2">
+          <div className="space-y-1.5">
             <label className="text-sm font-medium text-slate-700">Sex</label>
-            <select
-              name="sex"
-              value={formData.sex}
-              onChange={(e) => handleSelectChange("sex", e.target.value)}
-              disabled={isLoading}
-              className="w-full px-3 py-2.5 border border-clinic-border rounded-lg text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent disabled:opacity-50 disabled:bg-slate-50 appearance-none bg-white"
-            >
-              <option value="">Select sex...</option>
-              <option value="M">Male</option>
-              <option value="F">Female</option>
-              <option value="Other">Other</option>
-            </select>
+            <Select value={formData.sex} onValueChange={(value) => handleSelectChange("sex", value)} disabled={isLoading}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select sex..." />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="M">Male</SelectItem>
+                <SelectItem value="F">Female</SelectItem>
+                <SelectItem value="Other">Other</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
+
+          {isEditMode && (
+            <div className="space-y-1.5">
+              <label className="text-sm font-medium text-slate-700">Status</label>
+              <Select value={formData.status} onValueChange={(value) => handleSelectChange("status", value)} disabled={isLoading}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="active">Active</SelectItem>
+                  <SelectItem value="inactive">Inactive</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
 
           <Textarea
             label="Address"
@@ -206,7 +222,7 @@ export function PatientForm({
             rows={3}
           />
 
-          <SheetFooter className="pt-6 mt-8 border-t border-clinic-border gap-2 flex-row">
+          <SheetFooter>
             <Button
               type="button"
               variant="secondary"
@@ -226,8 +242,7 @@ export function PatientForm({
               {isEditMode ? "Update" : "Add"} Patient
             </Button>
           </SheetFooter>
-          </form>
-        </div>
+        </form>
       </SheetContent>
     </Sheet>
   );
