@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { toast } from "sonner";
@@ -22,6 +22,15 @@ export default function LoginPage() {
     password: "",
   });
   const [errors, setErrors] = useState<Partial<LoginFormData>>({});
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(window.location.search);
+    if (searchParams.has("email") || searchParams.has("password")) {
+      console.warn("⚠️ SECURITY: Credentials detected in URL. Clearing and redirecting...");
+      window.history.replaceState({}, "", "/login");
+      toast.error("For security, please enter credentials directly");
+    }
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;

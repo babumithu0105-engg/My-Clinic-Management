@@ -91,6 +91,7 @@ export async function PUT(
     if (validated.sex !== undefined) updatePayload.sex = validated.sex;
     if (validated.address !== undefined)
       updatePayload.address = validated.address;
+    if (validated.status !== undefined) updatePayload.status = validated.status;
 
     const { data, error } = await supabaseServer
       .from("patients")

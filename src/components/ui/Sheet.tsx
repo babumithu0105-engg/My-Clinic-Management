@@ -34,7 +34,7 @@ const SheetContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={clsx(
-        "fixed z-50 flex flex-col bg-white duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out md:rounded-lg",
+        "fixed z-50 flex flex-col bg-white shadow-xl duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out md:rounded-lg overflow-hidden",
         "md:left-1/2 md:top-1/2 md:max-h-[85vh] md:w-full md:max-w-lg md:-translate-x-1/2 md:-translate-y-1/2",
         "bottom-0 left-0 right-0 max-h-[85vh] rounded-t-lg",
         "data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
@@ -44,9 +44,24 @@ const SheetContent = React.forwardRef<
       )}
       {...props}
     >
+      <style>{`
+        .sheet-scrollable::-webkit-scrollbar {
+          width: 6px;
+        }
+        .sheet-scrollable::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .sheet-scrollable::-webkit-scrollbar-thumb {
+          background: #cbd5e1;
+          border-radius: 3px;
+        }
+        .sheet-scrollable::-webkit-scrollbar-thumb:hover {
+          background: #94a3b8;
+        }
+      `}</style>
       <div className="mx-auto mb-2 mt-4 h-1 w-12 rounded-full bg-slate-300 md:hidden" />
-      <div className="overflow-y-auto">{children}</div>
-      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-lg p-1 text-slate-600 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-sky-600 md:right-4 md:top-4">
+      {children}
+      <DialogPrimitive.Close className="absolute right-4 top-4 rounded-lg p-1 text-slate-500 hover:bg-slate-100 focus:outline-none focus:ring-2 focus:ring-primary-500 md:right-4 md:top-4">
         <XMarkIcon className="h-5 w-5" />
         <span className="sr-only">Close</span>
       </DialogPrimitive.Close>
@@ -61,7 +76,7 @@ const SheetHeader = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={clsx(
-      "flex flex-col space-y-2 border-b border-slate-200 px-6 py-4 sm:text-center md:text-left",
+      "flex flex-col flex-shrink-0 space-y-2 bg-primary-50 border-b border-primary-100 px-6 py-5 sm:text-center md:text-left",
       className
     )}
     {...props}
@@ -75,7 +90,7 @@ const SheetFooter = ({
 }: React.HTMLAttributes<HTMLDivElement>) => (
   <div
     className={clsx(
-      "flex flex-col-reverse border-t border-slate-200 px-6 py-4 sm:flex-row sm:justify-end sm:space-x-2",
+      "flex flex-shrink-0 gap-3 border-t border-slate-100 px-6 py-5",
       className
     )}
     {...props}
@@ -90,7 +105,7 @@ const SheetTitle = React.forwardRef<
   <DialogPrimitive.Title
     ref={ref}
     className={clsx(
-      "text-lg font-semibold leading-none text-slate-900 tracking-tight",
+      "text-xl font-bold leading-none text-slate-900 tracking-tight",
       className
     )}
     {...props}
@@ -104,7 +119,7 @@ const SheetDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <DialogPrimitive.Description
     ref={ref}
-    className={clsx("text-sm text-slate-600", className)}
+    className={clsx("text-sm text-primary-700/70", className)}
     {...props}
   />
 ));

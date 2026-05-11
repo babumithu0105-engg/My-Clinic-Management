@@ -67,7 +67,7 @@ export default function DoctorDashboard() {
   }, [loadQueue]);
 
   if (!user) {
-    return <LoadingOverlay message="Loading your dashboard..." />;
+    return <LoadingOverlay message="Loading..." />;
   }
 
   const handleStartVisit = (appointment: AppointmentWithPatient) => {

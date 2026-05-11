@@ -17,6 +17,7 @@ import {
   ClockIcon,
   CalendarDaysIcon,
   DocumentTextIcon,
+  CalendarIcon,
 } from "@heroicons/react/24/outline";
 import { clsx } from "clsx";
 
@@ -29,9 +30,15 @@ interface NavItem {
 
 const NAV_ITEMS: NavItem[] = [
   {
-    label: "Queue",
+    label: "Dashboard",
     href: "/receptionist",
     icon: <QueueListIcon className="h-5 w-5" />,
+    roles: ["receptionist"],
+  },
+  {
+    label: "Appointments",
+    href: "/receptionist/appointments",
+    icon: <CalendarIcon className="h-5 w-5" />,
     roles: ["receptionist"],
   },
   {
@@ -86,7 +93,11 @@ const AppShell = React.forwardRef<HTMLDivElement, AppShellProps>(
       (item) => !item.roles || (role && item.roles.includes(role))
     );
 
-    const isActive = (href: string) => pathname.startsWith(href);
+    const isActive = (href: string) => {
+      if (href === pathname) return true;
+      if (pathname.startsWith(href + "/")) return true;
+      return false;
+    };
 
     return (
       <div ref={ref} className="flex min-h-screen flex-col bg-clinic-bg md:flex-row">

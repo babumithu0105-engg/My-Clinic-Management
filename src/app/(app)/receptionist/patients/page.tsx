@@ -1,26 +1,29 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useAuth } from "@/context/AuthProvider";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
+import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
+import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { PatientForm } from "@/components/patients/PatientForm";
 import {
   Sheet,
   SheetContent,
-  SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetFooter,
 } from "@/components/ui/Sheet";
-import { UserGroupIcon, PencilIcon, ChevronLeftIcon, ChevronRightIcon } from "@heroicons/react/24/outline";
+import { UserGroupIcon, PencilIcon, ChevronLeftIcon, ChevronRightIcon, CalendarIcon } from "@heroicons/react/24/outline";
+import { toast } from "sonner";
 import type { Patient, AppointmentWithPatient } from "@/types";
 
 const ITEMS_PER_PAGE = 10;
 
 export default function PatientsPage() {
+  const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<Patient[]>([]);
   const [total, setTotal] = useState(0);
@@ -30,6 +33,8 @@ export default function PatientsPage() {
   const [, setSelectedPatient] = useState<Patient | null>(null);
   const [patientDetails, setPatientDetails] = useState<(Patient & { appointments?: AppointmentWithPatient[] }) | null>(null);
   const [openDetails, setOpenDetails] = useState(false);
+  const [editingField, setEditingField] = useState<string | null>(null);
+  const [editValues, setEditValues] = useState<Partial<Patient>>({});
 
   // Load patients on mount and when page changes
   useEffect(() => {
@@ -99,9 +104,42 @@ export default function PatientsPage() {
     loadPatients(1);
   };
 
+  const handleEditField = (field: string, value: string | number) => {
+    setEditValues((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleSaveEdit = async (field: string) => {
+    if (!patientDetails) return;
+    const newValue = editValues[field as keyof Patient];
+    if (newValue === patientDetails[field as keyof Patient]) {
+      setEditingField(null);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/patients/${patientDetails.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ [field]: newValue }),
+      });
+      if (!response.ok) throw new Error("Failed to update patient");
+
+      setPatientDetails((prev) => prev ? { ...prev, [field]: newValue } : null);
+      setEditingField(null);
+      toast.success("Patient updated");
+    } catch (error) {
+      console.error("Error updating patient:", error);
+      toast.error("Failed to update patient");
+    }
+  };
+
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
   const hasNextPage = currentPage < totalPages;
   const hasPrevPage = currentPage > 1;
+
+  if (!user) {
+    return <LoadingOverlay message="Loading..." />;
+  }
 
   return (
     <>
@@ -150,27 +188,43 @@ export default function PatientsPage() {
         />
       ) : (
         <>
-          <div className="space-y-2 mb-6">
+          <div className="space-y-1 mb-6">
             {results.map((patient) => (
-              <button
+              <div
                 key={patient.id}
-                onClick={() => handleSelectPatient(patient)}
-                className="w-full p-4 bg-white border border-clinic-border rounded-lg hover:shadow-md transition-shadow text-left"
+                className="p-3 bg-white border border-clinic-border rounded-lg hover:shadow-md transition-shadow flex items-center justify-between text-sm"
               >
-                <div className="flex items-center justify-between">
-                  <div>
-                    <div className="font-semibold text-slate-900">
-                      {patient.name}
-                    </div>
-                    <div className="text-sm text-slate-500">
-                      {patient.phone_number}
-                      {patient.age && ` • Age: ${patient.age}`}
-                      {patient.sex && ` • ${patient.sex}`}
-                    </div>
-                  </div>
-                  <PencilIcon className="h-5 w-5 text-primary-500 flex-shrink-0" />
+                <button
+                  onClick={() => window.location.href = `/receptionist/patients/${patient.id}/appointments`}
+                  className="flex-1 text-left flex items-center gap-3"
+                >
+                  <span className="font-semibold text-slate-900">{patient.name}</span>
+                  <span className="text-slate-500">{patient.phone_number}</span>
+                  {patient.age && <span className="text-slate-500">Age: {patient.age}</span>}
+                  {patient.sex && <span className="text-slate-500">{patient.sex}</span>}
+                  {patient.status && (
+                    <Badge variant={patient.status === "active" ? "success" : "warning"}>
+                      {patient.status === "active" ? "Active" : "Inactive"}
+                    </Badge>
+                  )}
+                </button>
+                <div className="flex items-center gap-2 flex-shrink-0 ml-2">
+                  <button
+                    onClick={() => window.location.href = `/receptionist/patients/${patient.id}/appointments`}
+                    className="text-slate-500 hover:text-primary-600 transition-colors p-1"
+                    title="View appointments"
+                  >
+                    <CalendarIcon className="h-4 w-4" />
+                  </button>
+                  <button
+                    onClick={() => handleSelectPatient(patient)}
+                    className="text-primary-500 hover:text-primary-600 transition-colors p-1"
+                    title="Edit patient"
+                  >
+                    <PencilIcon className="h-4 w-4" />
+                  </button>
                 </div>
-              </button>
+              </div>
             ))}
           </div>
 
@@ -217,96 +271,129 @@ export default function PatientsPage() {
         <SheetContent className="w-full sm:max-w-md">
           <SheetHeader>
             <SheetTitle>{patientDetails?.name}</SheetTitle>
-            <SheetDescription>Patient details and history</SheetDescription>
           </SheetHeader>
 
           {patientDetails && (
             <div className="mt-6 space-y-4">
-              {/* Patient Info */}
-              <div className="space-y-3 pb-4 border-b border-clinic-border">
+              {/* Patient Info - Editable */}
+              <div className="space-y-4 pb-4 border-b border-clinic-border">
                 <div>
-                  <div className="text-xs font-semibold text-slate-500 uppercase">
-                    Phone
-                  </div>
-                  <div className="text-sm text-slate-900">
-                    {patientDetails.phone_number}
-                  </div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Phone Number
+                  </label>
+                  {editingField === "phone_number" ? (
+                    <input
+                      type="tel"
+                      value={editValues.phone_number || patientDetails.phone_number}
+                      onChange={(e) => handleEditField("phone_number", e.target.value)}
+                      onBlur={() => handleSaveEdit("phone_number")}
+                      autoFocus
+                      className="w-full px-3 py-2 rounded-lg border border-clinic-border bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors text-sm"
+                      placeholder="10-digit phone number"
+                    />
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setEditingField("phone_number");
+                        setEditValues({ phone_number: patientDetails.phone_number });
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm text-slate-900 bg-slate-50 hover:bg-slate-100 border border-clinic-border rounded-lg transition-colors"
+                    >
+                      {patientDetails.phone_number}
+                    </button>
+                  )}
                 </div>
-                {patientDetails.age && (
-                  <div>
-                    <div className="text-xs font-semibold text-slate-500 uppercase">
-                      Age
-                    </div>
-                    <div className="text-sm text-slate-900">
-                      {patientDetails.age} years
-                    </div>
-                  </div>
-                )}
-                {patientDetails.sex && (
-                  <div>
-                    <div className="text-xs font-semibold text-slate-500 uppercase">
-                      Sex
-                    </div>
-                    <div className="text-sm text-slate-900">
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Age
+                  </label>
+                  {editingField === "age" ? (
+                    <input
+                      type="number"
+                      value={editValues.age ?? patientDetails.age ?? ""}
+                      onChange={(e) => handleEditField("age", parseInt(e.target.value) || 0)}
+                      onBlur={() => handleSaveEdit("age")}
+                      autoFocus
+                      className="w-full px-3 py-2 rounded-lg border border-clinic-border bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors text-sm"
+                      placeholder="Age in years"
+                    />
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setEditingField("age");
+                        setEditValues({ age: patientDetails.age });
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm text-slate-900 bg-slate-50 hover:bg-slate-100 border border-clinic-border rounded-lg transition-colors"
+                    >
+                      {patientDetails.age ? `${patientDetails.age} years` : "Not set"}
+                    </button>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Sex
+                  </label>
+                  {editingField === "sex" ? (
+                    <select
+                      value={(editValues.sex as string) || patientDetails.sex || ""}
+                      onChange={(e) => handleEditField("sex", e.target.value)}
+                      onBlur={() => handleSaveEdit("sex")}
+                      autoFocus
+                      className="w-full px-3 py-2 rounded-lg border border-clinic-border bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors text-sm"
+                    >
+                      <option value="">Select sex...</option>
+                      <option value="M">Male</option>
+                      <option value="F">Female</option>
+                    </select>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setEditingField("sex");
+                        setEditValues({ sex: patientDetails.sex });
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm text-slate-900 bg-slate-50 hover:bg-slate-100 border border-clinic-border rounded-lg transition-colors"
+                    >
                       {patientDetails.sex === "M"
                         ? "Male"
                         : patientDetails.sex === "F"
                         ? "Female"
-                        : "Other"}
-                    </div>
-                  </div>
-                )}
-                {patientDetails.address && (
-                  <div>
-                    <div className="text-xs font-semibold text-slate-500 uppercase">
-                      Address
-                    </div>
-                    <div className="text-sm text-slate-900">
-                      {patientDetails.address}
-                    </div>
-                  </div>
-                )}
+                        : "Not set"}
+                    </button>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1">
+                    Address
+                  </label>
+                  {editingField === "address" ? (
+                    <textarea
+                      value={editValues.address || patientDetails.address || ""}
+                      onChange={(e) => handleEditField("address", e.target.value)}
+                      onBlur={() => handleSaveEdit("address")}
+                      autoFocus
+                      className="w-full px-3 py-2 rounded-lg border border-clinic-border bg-white text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent transition-colors text-sm resize-none"
+                      rows={3}
+                      placeholder="Patient address"
+                    />
+                  ) : (
+                    <button
+                      onClick={() => {
+                        setEditingField("address");
+                        setEditValues({ address: patientDetails.address });
+                      }}
+                      className="w-full px-3 py-2 text-left text-sm text-slate-900 bg-slate-50 hover:bg-slate-100 border border-clinic-border rounded-lg transition-colors"
+                    >
+                      {patientDetails.address || "Not set"}
+                    </button>
+                  )}
+                </div>
               </div>
 
-              {/* Recent Appointments */}
-              {patientDetails.appointments && patientDetails.appointments.length > 0 && (
-                <div>
-                  <div className="text-xs font-semibold text-slate-500 uppercase mb-2">
-                    Recent Appointments
-                  </div>
-                  <div className="space-y-2">
-                    {patientDetails.appointments.map((apt) => (
-                      <div
-                        key={apt.id}
-                        className="text-sm p-2 bg-slate-50 rounded border border-clinic-border"
-                      >
-                        <div className="font-medium text-slate-900">
-                          {apt.appointment_date} at {apt.appointment_time}
-                        </div>
-                        <div className="text-xs text-slate-500 mt-1">
-                          Duration: {apt.duration_minutes}min • Status:{" "}
-                          <span className="capitalize">{apt.status}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           )}
-
-          <SheetFooter className="pt-4">
-            <Button
-              variant="primary"
-              onClick={() => {
-                // TODO: Open edit form for patient
-                setOpenDetails(false);
-              }}
-              fullWidth
-            >
-              Edit Patient
-            </Button>
-          </SheetFooter>
         </SheetContent>
       </Sheet>
     </>

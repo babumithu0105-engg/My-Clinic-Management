@@ -1,9 +1,10 @@
 "use client";
 
 import * as React from "react";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/Sheet";
+import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/Sheet";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
 import { PatientSearchCombobox } from "@/components/patients/PatientSearchCombobox";
 import { toast } from "sonner";
 import { format } from "date-fns";
@@ -15,7 +16,7 @@ interface WalkInFormProps {
 }
 
 export function WalkInForm({ open, onOpenChange, onSuccess }: WalkInFormProps) {
-  const [patientId, setPatientId] = React.useState<string>("");
+  const [selectedPatient, setSelectedPatient] = React.useState<{ id: string; name: string; phone_number: string } | null>(null);
   const [duration, setDuration] = React.useState<string>("30");
   const [notes, setNotes] = React.useState<string>("");
   const [isLoading, setIsLoading] = React.useState(false);
@@ -40,7 +41,7 @@ export function WalkInForm({ open, onOpenChange, onSuccess }: WalkInFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!patientId) {
+    if (!selectedPatient) {
       toast.error("Please select a patient");
       return;
     }
@@ -52,7 +53,7 @@ export function WalkInForm({ open, onOpenChange, onSuccess }: WalkInFormProps) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          patient_id: patientId,
+          patient_id: selectedPatient.id,
           appointment_date: today,
           duration_minutes: parseInt(duration),
           receptionist_notes: notes || null,
@@ -66,7 +67,7 @@ export function WalkInForm({ open, onOpenChange, onSuccess }: WalkInFormProps) {
       }
 
       toast.success("Walk-in added successfully");
-      setPatientId("");
+      setSelectedPatient(null);
       setDuration("30");
       setNotes("");
       onOpenChange(false);
@@ -80,42 +81,58 @@ export function WalkInForm({ open, onOpenChange, onSuccess }: WalkInFormProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent className="w-full sm:max-w-md">
+      <SheetContent className="w-full sm:max-w-md flex flex-col">
         <SheetHeader>
           <SheetTitle>Add Walk-in Patient</SheetTitle>
           <SheetDescription>Check in a walk-in patient to the queue</SheetDescription>
         </SheetHeader>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-5">
+        <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto sheet-scrollable px-6 py-6 space-y-5">
           {/* Patient Selection */}
-          <div>
-            <label className="text-sm font-medium text-slate-700 block mb-2">
-              Patient <span className="text-red-600">*</span>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700">
+              Patient <span className="text-red-500 ml-0.5">*</span>
             </label>
-            <PatientSearchCombobox
-              onSelect={(patient) => setPatientId(patient.id)}
-              placeholder="Search or add patient..."
-            />
+            {selectedPatient ? (
+              <div className="px-3 py-2.5 border border-slate-300 rounded-lg bg-slate-50 text-slate-900 flex items-center justify-between">
+                <div>
+                  <div className="font-medium">{selectedPatient.name}</div>
+                  <div className="text-sm text-slate-500">{selectedPatient.phone_number}</div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSelectedPatient(null)}
+                  className="text-slate-400 hover:text-slate-600"
+                  title="Change patient"
+                >
+                  ✕
+                </button>
+              </div>
+            ) : (
+              <PatientSearchCombobox
+                onSelect={(patient) => setSelectedPatient({ id: patient.id, name: patient.name, phone_number: patient.phone_number })}
+                placeholder="Search or add patient..."
+              />
+            )}
           </div>
 
           {/* Duration */}
-          <div>
-            <label className="text-sm font-medium text-slate-700 block mb-2">
-              Duration (minutes) <span className="text-red-600">*</span>
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700">
+              Duration (minutes) <span className="text-red-500 ml-0.5">*</span>
             </label>
-            <select
-              value={duration}
-              onChange={(e) => setDuration(e.target.value)}
-              required
-              className="w-full px-3 py-2 border border-slate-300 rounded-md"
-            >
-            <option value="">Select duration</option>
-            {durations.map((d) => (
-              <option key={d} value={d}>
-                {d} minutes
-              </option>
-            ))}
-            </select>
+            <Select value={duration} onValueChange={setDuration}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select duration" />
+              </SelectTrigger>
+              <SelectContent>
+                {durations.map((d) => (
+                  <SelectItem key={d} value={d}>
+                    {d} minutes
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {/* Notes */}
@@ -128,10 +145,10 @@ export function WalkInForm({ open, onOpenChange, onSuccess }: WalkInFormProps) {
           />
 
           {/* Actions */}
-          <div className="flex gap-3 pt-4">
+          <SheetFooter>
             <Button
               type="button"
-              variant="ghost"
+              variant="secondary"
               fullWidth
               onClick={() => onOpenChange(false)}
             >
@@ -145,7 +162,7 @@ export function WalkInForm({ open, onOpenChange, onSuccess }: WalkInFormProps) {
             >
               Add Walk-in
             </Button>
-          </div>
+          </SheetFooter>
         </form>
       </SheetContent>
     </Sheet>

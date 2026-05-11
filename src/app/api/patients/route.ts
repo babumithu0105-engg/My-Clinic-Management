@@ -19,7 +19,9 @@ export async function GET(request: NextRequest) {
       .from("patients")
       .select("*", { count: "exact" })
       .eq("business_id", context.business_id)
-      .order("name", { ascending: true });
+      .order("status", { ascending: true })
+      .order("name", { ascending: true })
+      .order("phone_number", { ascending: true });
 
     if (searchQuery) {
       query = query.or(
@@ -64,6 +66,7 @@ export async function POST(request: NextRequest) {
           age: validated.age ?? null,
           sex: validated.sex ?? null,
           address: validated.address ?? null,
+          status: validated.status ?? "active",
         },
       ])
       .select()
