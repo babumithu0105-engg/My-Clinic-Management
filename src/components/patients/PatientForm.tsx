@@ -8,12 +8,12 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetFooter,
 } from "@/components/ui/Sheet";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
+import { Badge } from "@/components/ui/Badge";
 import type { Patient } from "@/types";
 
 interface PatientFormProps {
@@ -151,6 +151,22 @@ export function PatientForm({
           </SheetDescription>
         </SheetHeader>
 
+        {isEditMode && initialData && (
+          <div className="flex items-center justify-between gap-4 px-6 py-4 border-b border-slate-100">
+            <div>
+              <h3 className="text-base font-semibold text-slate-900">{initialData.name}</h3>
+              <p className="text-xs text-slate-600 mt-1">
+                {initialData.phone_number}{initialData.age ? ` • Age ${initialData.age}` : ''}{initialData.sex ? ` • ${initialData.sex}` : ''}
+              </p>
+            </div>
+            {initialData.status && (
+              <Badge variant={initialData.status === "active" ? "success" : "warning"}>
+                {initialData.status === "active" ? "Active" : "Inactive"}
+              </Badge>
+            )}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto sheet-scrollable px-6 py-6 space-y-5">
           <Input
             label="Name *"
@@ -197,6 +213,18 @@ export function PatientForm({
             </Select>
           </div>
 
+          <div className="space-y-1.5">
+            <label className="text-sm font-medium text-slate-700">Address</label>
+            <Textarea
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              placeholder="Street address (optional)"
+              disabled={isLoading}
+              rows={3}
+            />
+          </div>
+
           {isEditMode && (
             <div className="space-y-1.5">
               <label className="text-sm font-medium text-slate-700">Status</label>
@@ -212,17 +240,8 @@ export function PatientForm({
             </div>
           )}
 
-          <Textarea
-            label="Address"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            placeholder="Street address (optional)"
-            disabled={isLoading}
-            rows={3}
-          />
 
-          <SheetFooter>
+          <div className="flex gap-3 pt-5 mt-6 border-t border-slate-100">
             <Button
               type="button"
               variant="secondary"
@@ -241,7 +260,7 @@ export function PatientForm({
             >
               {isEditMode ? "Update" : "Add"} Patient
             </Button>
-          </SheetFooter>
+          </div>
         </form>
       </SheetContent>
     </Sheet>

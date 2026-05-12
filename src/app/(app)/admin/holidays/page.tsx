@@ -11,7 +11,7 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { ConfirmInline } from "@/components/ui/ConfirmInline";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/Sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/Sheet";
 import { CalendarDaysIcon, TrashIcon } from "@heroicons/react/24/outline";
 import { formatDateReadable, getCurrentDate } from "@/lib/utils";
 import { DatePicker } from "@/components/ui/DatePicker";
@@ -227,7 +227,7 @@ export default function HolidaysAdmin() {
                 disabled={isAdding}
               />
 
-              <SheetFooter className="pt-6 mt-8 border-t border-clinic-border gap-2 flex-row">
+              <div className="flex gap-3 pt-5 mt-6 border-t border-slate-100">
                 <Button
                   type="button"
                   variant="secondary"
@@ -246,7 +246,7 @@ export default function HolidaysAdmin() {
                 >
                   Add Holiday
                 </Button>
-              </SheetFooter>
+              </div>
             </form>
           </div>
         </SheetContent>

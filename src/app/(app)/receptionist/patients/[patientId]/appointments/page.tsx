@@ -128,21 +128,47 @@ export default function PatientAppointmentsPage({
         </Link>
       </div>
 
-      {/* Patient Details Card */}
+      {/* Patient Header */}
       {isLoading ? (
         <div className="mb-6 space-y-2">
           <Skeleton className="h-8 w-48" />
           <Skeleton className="h-6 w-64" />
         </div>
       ) : patient ? (
-        <div className="mb-8 p-4 border border-clinic-border rounded-lg bg-white">
-          <h1 className="text-2xl font-bold text-slate-900 mb-2">{patient.name}</h1>
-          <div className="flex gap-4 text-sm text-slate-600">
-            <span>{patient.phone_number}</span>
-            {patient.age && <span>Age {patient.age}</span>}
-            {patient.sex && <span>{patient.sex === "M" ? "Male" : "Female"}</span>}
+        <>
+          <div className="mb-6">
+            <div className="flex items-center gap-3 mb-2">
+              <h1 className="text-2xl font-bold text-slate-900">{patient.name}</h1>
+              {patient.status && (
+                <Badge variant={patient.status === "active" ? "success" : "warning"}>
+                  {patient.status === "active" ? "Active" : "Inactive"}
+                </Badge>
+              )}
+            </div>
           </div>
-        </div>
+
+          {/* Patient Info Card */}
+          <div className="bg-white border border-clinic-border rounded-lg p-6 mb-8">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+              <div>
+                <span className="text-sm text-slate-600">Phone</span>
+                <div className="text-slate-900 font-medium">{patient.phone_number}</div>
+              </div>
+              {patient.age && (
+                <div>
+                  <span className="text-sm text-slate-600">Age</span>
+                  <div className="text-slate-900 font-medium">{patient.age}</div>
+                </div>
+              )}
+              {patient.sex && (
+                <div>
+                  <span className="text-sm text-slate-600">Sex</span>
+                  <div className="text-slate-900 font-medium">{patient.sex === "M" ? "Male" : "Female"}</div>
+                </div>
+              )}
+            </div>
+          </div>
+        </>
       ) : null}
 
       {/* Appointments Section */}
