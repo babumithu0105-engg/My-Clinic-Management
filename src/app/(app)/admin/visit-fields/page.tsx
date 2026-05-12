@@ -13,7 +13,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
 import { ConfirmInline } from "@/components/ui/ConfirmInline";
 import { Badge } from "@/components/ui/Badge";
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetFooter } from "@/components/ui/Sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/Sheet";
 import { DocumentTextIcon, TrashIcon, ChevronUpIcon, ChevronDownIcon, PencilIcon } from "@heroicons/react/24/outline";
 
 interface VisitField {
@@ -387,7 +387,7 @@ export default function VisitFieldsAdmin() {
                 <span className="text-sm text-slate-700">Required field</span>
               </label>
 
-              <SheetFooter className="pt-6 mt-8 border-t border-clinic-border gap-2 flex-row">
+              <div className="flex gap-3 pt-5 mt-6 border-t border-slate-100">
                 <Button
                   type="button"
                   variant="secondary"
@@ -406,7 +406,7 @@ export default function VisitFieldsAdmin() {
                 >
                   {editingId ? "Update" : "Add"} Field
                 </Button>
-              </SheetFooter>
+              </div>
             </form>
           </div>
         </SheetContent>

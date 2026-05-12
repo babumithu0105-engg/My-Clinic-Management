@@ -3,35 +3,28 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthProvider";
 import { PageHeader } from "@/components/layout/PageHeader";
-import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { Skeleton } from "@/components/ui/Skeleton";
 import { LoadingOverlay } from "@/components/ui/LoadingOverlay";
-import { PatientForm } from "@/components/patients/PatientForm";
-import { UserGroupIcon, PencilIcon, ChevronLeftIcon, ChevronRightIcon, CalendarIcon } from "@heroicons/react/24/outline";
+import { UserGroupIcon, CalendarIcon } from "@heroicons/react/24/outline";
 import type { Patient } from "@/types";
 
 const ITEMS_PER_PAGE = 10;
 
-export default function PatientsPage() {
+export default function DoctorPatientsPage() {
   const { user } = useAuth();
   const [search, setSearch] = useState("");
   const [results, setResults] = useState<Patient[]>([]);
   const [total, setTotal] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [isLoading, setIsLoading] = useState(true);
-  const [openAddForm, setOpenAddForm] = useState(false);
-  const [selectedPatient, setSelectedPatient] = useState<Patient | null>(null);
-  const [openEditForm, setOpenEditForm] = useState(false);
 
-  // Load patients on mount and when page changes
   useEffect(() => {
     loadPatients(1);
   }, []);
 
-  // Load patients when search changes
   useEffect(() => {
     if (search) {
       loadPatients(1, search);
@@ -70,19 +63,8 @@ export default function PatientsPage() {
     setSearch(e.target.value);
   };
 
-  const handleEditPatient = (patient: Patient) => {
-    setSelectedPatient(patient);
-    setOpenEditForm(true);
-  };
-
-  const handleEditSuccess = async () => {
-    setOpenEditForm(false);
-    loadPatients(currentPage, search);
-  };
-
-  const handlePatientSuccess = async () => {
-    setOpenAddForm(false);
-    loadPatients(1);
+  const handleViewDetails = (patient: Patient) => {
+    window.location.href = `/doctor/patients/${patient.id}`;
   };
 
   const totalPages = Math.ceil(total / ITEMS_PER_PAGE);
@@ -98,14 +80,6 @@ export default function PatientsPage() {
       <PageHeader
         title="Patients"
         description={`${total} patient${total !== 1 ? 's' : ''} in system`}
-        action={
-          <Button
-            variant="primary"
-            onClick={() => setOpenAddForm(true)}
-          >
-            Add Patient
-          </Button>
-        }
       />
 
       {/* Search Bar */}
@@ -128,15 +102,7 @@ export default function PatientsPage() {
         <EmptyState
           icon={<UserGroupIcon className="h-12 w-12 text-primary-400" />}
           title={search ? "No patients found" : "No patients yet"}
-          description={search ? `No patients match "${search}"` : "Add your first patient to get started"}
-          action={
-            <Button
-              variant="primary"
-              onClick={() => setOpenAddForm(true)}
-            >
-              Add Patient
-            </Button>
-          }
+          description={search ? `No patients match "${search}"` : "Patients will appear here"}
         />
       ) : (
         <>
@@ -147,7 +113,7 @@ export default function PatientsPage() {
                 className="p-3 bg-white border border-clinic-border rounded-lg hover:shadow-md transition-shadow flex items-center justify-between text-sm"
               >
                 <button
-                  onClick={() => window.location.href = `/receptionist/patients/${patient.id}/appointments`}
+                  onClick={() => handleViewDetails(patient)}
                   className="flex-1 text-left flex items-center gap-3"
                 >
                   <span className="font-semibold text-slate-900">{patient.name}</span>
@@ -162,18 +128,11 @@ export default function PatientsPage() {
                 </button>
                 <div className="flex items-center gap-2 flex-shrink-0 ml-2">
                   <button
-                    onClick={() => window.location.href = `/receptionist/patients/${patient.id}/appointments`}
+                    onClick={() => handleViewDetails(patient)}
                     className="text-slate-500 hover:text-primary-600 transition-colors p-1"
-                    title="View appointments"
+                    title="View visits"
                   >
                     <CalendarIcon className="h-4 w-4" />
-                  </button>
-                  <button
-                    onClick={() => handleEditPatient(patient)}
-                    className="text-primary-500 hover:text-primary-600 transition-colors p-1"
-                    title="Edit patient"
-                  >
-                    <PencilIcon className="h-4 w-4" />
                   </button>
                 </div>
               </div>
@@ -187,45 +146,25 @@ export default function PatientsPage() {
                 Page {currentPage} of {totalPages} • Showing {results.length} of {total}
               </div>
               <div className="flex gap-2">
-                <Button
-                  variant="secondary"
-                  size="sm"
+                <button
                   onClick={() => loadPatients(currentPage - 1, search)}
                   disabled={!hasPrevPage || isLoading}
+                  className="px-3 py-2 rounded-lg border border-clinic-border text-slate-900 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
                 >
-                  <ChevronLeftIcon className="h-4 w-4" />
                   Previous
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
+                </button>
+                <button
                   onClick={() => loadPatients(currentPage + 1, search)}
                   disabled={!hasNextPage || isLoading}
+                  className="px-3 py-2 rounded-lg border border-clinic-border text-slate-900 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-medium"
                 >
                   Next
-                  <ChevronRightIcon className="h-4 w-4" />
-                </Button>
+                </button>
               </div>
             </div>
           )}
         </>
       )}
-
-      {/* Add Patient Form */}
-      <PatientForm
-        open={openAddForm}
-        onOpenChange={setOpenAddForm}
-        onSuccess={() => handlePatientSuccess()}
-      />
-
-      {/* Edit Patient Form */}
-      <PatientForm
-        open={openEditForm}
-        onOpenChange={setOpenEditForm}
-        patientId={selectedPatient?.id}
-        initialData={selectedPatient || undefined}
-        onSuccess={() => handleEditSuccess()}
-      />
     </>
   );
 }

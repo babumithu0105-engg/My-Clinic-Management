@@ -48,9 +48,15 @@ const NAV_ITEMS: NavItem[] = [
     roles: ["receptionist"],
   },
   {
-    label: "Queue",
+    label: "Dashboard",
     href: "/doctor",
     icon: <QueueListIcon className="h-5 w-5" />,
+    roles: ["doctor"],
+  },
+  {
+    label: "Patients",
+    href: "/doctor/patients",
+    icon: <UserGroupIcon className="h-5 w-5" />,
     roles: ["doctor"],
   },
   {

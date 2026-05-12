@@ -14,7 +14,7 @@ import { ConfirmInline } from "@/components/ui/ConfirmInline";
 import { BookingForm } from "@/components/appointments/BookingForm";
 import { WalkInForm } from "@/components/appointments/WalkInForm";
 import { CalendarIcon, UserGroupIcon, UserPlusIcon, PencilIcon, TrashIcon, CheckCircleIcon } from "@heroicons/react/24/outline";
-import { formatTime12h, formatDateReadable, getCurrentDate } from "@/lib/utils";
+import { formatTime12h, formatDateReadable } from "@/lib/utils";
 import type { AppointmentWithPatient, QueueResponse } from "@/types";
 
 type TabType = "queue" | "schedule";
@@ -28,8 +28,13 @@ export default function ReceptionistDashboard() {
   const [queue, setQueue] = useState<QueueResponse | null>(null);
   const [queueLoading, setQueueLoading] = useState(true);
 
-  // Schedule state
-  const [selectedDate, setSelectedDate] = useState(getCurrentDate());
+  // Schedule state - default to first day in the 3-day view (next day)
+  const getDefaultScheduleDate = () => {
+    const date = new Date();
+    date.setDate(date.getDate());
+    return date.toISOString().split('T')[0];
+  };
+  const [selectedDate, setSelectedDate] = useState(getDefaultScheduleDate());
   const [appointments, setAppointments] = useState<AppointmentWithPatient[]>([]);
   const [scheduleLoading, setScheduleLoading] = useState(true);
 
@@ -197,20 +202,6 @@ export default function ReceptionistDashboard() {
             </div>
             <h3 className="text-lg font-bold text-slate-900">Book Appointment</h3>
             <p className="text-sm text-slate-600 mt-2">Schedule a new appointment</p>
-          </div>
-        </button>
-
-        <button
-          onClick={() => setActiveTab("queue")}
-          className="group relative overflow-hidden rounded-lg border-2 border-dashed border-primary-300 bg-primary-50 p-6 transition-all hover:border-primary-500 hover:shadow-md"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-primary-100 to-transparent opacity-0 transition-opacity group-hover:opacity-100"></div>
-          <div className="relative z-10 flex flex-col items-start">
-            <div className="rounded-lg bg-primary-200 p-3 mb-4">
-              <UserGroupIcon className="h-6 w-6 text-primary-700" />
-            </div>
-            <h3 className="text-lg font-bold text-slate-900">View Queue</h3>
-            <p className="text-sm text-slate-600 mt-2">See current patient queue</p>
           </div>
         </button>
       </div>
@@ -494,13 +485,13 @@ export default function ReceptionistDashboard() {
                   className="p-4 bg-white border border-clinic-border rounded-lg hover:shadow-md transition-shadow"
                 >
                   <div className="flex items-center justify-between gap-4">
-                    <div className="font-semibold text-slate-900">
+                    <div className="font-semibold text-slate-900 min-w-fit">
                       {formatTime12h(appointment.appointment_time)}
                     </div>
-                    <div className="text-sm text-slate-600">
+                    <div className="text-sm text-slate-600 min-w-fit">
                       {appointment.duration_minutes} min
                     </div>
-                    <div>
+                    <div className="min-w-fit">
                       {getStatusBadge(appointment.status)}
                     </div>
                     <div className="flex-1 text-sm text-slate-700 ml-4">

@@ -44,6 +44,97 @@ async function fetchVisitWithFields(
   } as VisitWithFields;
 }
 
+// GET /api/visits
+// List all visits with appointments for the business
+export async function GET(request: NextRequest) {
+  try {
+    const context = extractUserContext(request);
+    validateRole(context, ["doctor"]);
+
+    // Fetch all visits for this business with their appointments
+    const { data: visits, error: visitsError } = await supabaseServer
+      .from("visits")
+      .select(
+        `
+        id,
+        business_id,
+        appointment_id,
+        check_in_time,
+        completion_time,
+        free_text_notes,
+        field_values,
+        created_at,
+        updated_at,
+        appointments (
+          id,
+          business_id,
+          patient_id,
+          appointment_date,
+          appointment_time,
+          duration_minutes,
+          status,
+          is_walk_in,
+          receptionist_notes,
+          created_at,
+          updated_at,
+          patients (
+            id,
+            name,
+            phone_number,
+            age,
+            sex
+          )
+        )
+      `
+      )
+      .eq("business_id", context.business_id)
+      .order("created_at", { ascending: false });
+
+    if (visitsError) {
+      throw Errors.DATABASE_ERROR(visitsError.message);
+    }
+
+    // Transform the data to match expected format
+    const transformedVisits = await Promise.all(
+      (visits || []).map(async (visit: any) => {
+        const fieldValuesRecord: Record<string, string | null> = {};
+
+        // Fetch field values
+        const { data: fieldValues } = await supabaseServer
+          .from("visit_field_values")
+          .select("field_id, field_value")
+          .eq("visit_id", visit.id);
+
+        (fieldValues || []).forEach((fv: any) => {
+          fieldValuesRecord[fv.field_id] = fv.field_value;
+        });
+
+        return {
+          visits: {
+            ...visit,
+            field_values: fieldValuesRecord,
+          },
+          appointments: visit.appointments
+            ? {
+                ...visit.appointments,
+                patient: visit.appointments.patients,
+              }
+            : null,
+        };
+      })
+    );
+
+    return successResponse({
+      visits: transformedVisits.map((record) => ({
+        appointment: record.appointments,
+        visit: record.visits,
+      })),
+    });
+  } catch (error) {
+    return errorResponse(error);
+  }
+}
+
 // POST /api/visits
 // Create a new visit (check-in patient)
 export async function POST(request: NextRequest) {

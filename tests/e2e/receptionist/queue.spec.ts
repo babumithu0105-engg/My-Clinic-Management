@@ -58,12 +58,21 @@ test.describe("Receptionist - Queue Management", () => {
       const patientSearch = page.locator('input[placeholder*="Search"]').first();
       await patientSearch.fill(patientName);
 
-      // Click on patient from dropdown
-      await page.click(`text=${patientName}`);
+      // Wait for dropdown to appear
+      await page.waitForTimeout(400); // Debounce delay
 
-      // Select duration
-      const durationSelect = page.locator('select').first();
-      await durationSelect.selectOption("30");
+      // Click on patient from dropdown
+      const patientOption = page.locator(`text=${patientName}`).first();
+      await patientOption.click();
+
+      // Verify patient is selected (shows patient card instead of search)
+      const selectedPatientCard = page.locator(`text=${patientName}`);
+      await expect(selectedPatientCard).toBeVisible({ timeout: 5000 });
+
+      // Select duration using Radix Select
+      const durationTrigger = page.locator('[role="combobox"]').filter({ has: page.locator("text=Duration").locator("..") }).first();
+      await durationTrigger.click();
+      await page.click('div[role="option"]:has-text("30 minutes")');
 
       // Submit
       await page.click('button:has-text("Add Walk-in")');

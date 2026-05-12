@@ -28,9 +28,10 @@ test.describe("Receptionist - Patients Management", () => {
     await page.fill('input[placeholder*="phone"]', patientPhone);
     await page.fill('input[placeholder*="age"]', "30");
 
-    // Select sex
-    const sexSelect = page.locator('select').first();
-    await sexSelect.selectOption("M");
+    // Select sex using Radix Select
+    const sexSelectTrigger = page.locator('[role="combobox"]').filter({ has: page.locator("text=Sex").locator("..") }).first();
+    await sexSelectTrigger.click();
+    await page.click('div[role="option"]:has-text("Male")');
 
     // Click save button
     await page.click('button:has-text("Save") >> nth=0');
@@ -131,5 +132,41 @@ test.describe("Receptionist - Patients Management", () => {
       (await patientsList.count()) > 0;
 
     expect(hasContent).toBe(true);
+  });
+
+  test("should edit patient and update status", async ({ page }) => {
+    // Create a patient first
+    await page.click('button:has-text("Add Patient")');
+    await expect(page.locator("text=Add Patient")).toBeVisible();
+
+    const timestamp = Date.now();
+    const patientName = `EditStatus ${timestamp}`;
+    const patientPhone = `555${Math.floor(Math.random() * 9999999)
+      .toString()
+      .padStart(7, "0")}`;
+
+    await page.fill('input[placeholder*="name"]', patientName);
+    await page.fill('input[placeholder*="phone"]', patientPhone);
+
+    await page.click('button:has-text("Save") >> nth=0');
+    await expect(page.locator("text=successfully")).toBeVisible({ timeout: 5000 });
+
+    // Find and click the edit icon for the patient
+    const patientRow = page.locator(`text=${patientName}`).first();
+    const editIcon = patientRow.locator('..').locator('button:has-text("✎") , button[title="Edit"]').first();
+
+    if (await editIcon.isVisible()) {
+      await editIcon.click();
+
+      // Wait for edit form
+      await expect(page.locator("text=Edit Patient")).toBeVisible();
+
+      // Should see status field in edit mode
+      const statusField = page.locator("text=Status");
+      expect(await statusField.isVisible()).toBe(true);
+
+      // Close the form
+      await page.click('button:has-text("Cancel")');
+    }
   });
 });

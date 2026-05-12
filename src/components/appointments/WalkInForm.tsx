@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Sheet, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/Sheet";
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from "@/components/ui/Sheet";
 import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/Textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/Select";
@@ -144,8 +144,7 @@ export function WalkInForm({ open, onOpenChange, onSuccess }: WalkInFormProps) {
             rows={3}
           />
 
-          {/* Actions */}
-          <SheetFooter>
+          <div className="flex gap-3 pt-5 mt-6 border-t border-slate-100">
             <Button
               type="button"
               variant="secondary"
@@ -162,7 +161,7 @@ export function WalkInForm({ open, onOpenChange, onSuccess }: WalkInFormProps) {
             >
               Add Walk-in
             </Button>
-          </SheetFooter>
+          </div>
         </form>
       </SheetContent>
     </Sheet>

@@ -8,7 +8,6 @@ import {
   SheetDescription,
   SheetHeader,
   SheetTitle,
-  SheetFooter,
 } from "@/components/ui/Sheet";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -313,8 +312,7 @@ export function BookingForm({
             rows={3}
           />
 
-          {/* Footer */}
-          <SheetFooter>
+          <div className="flex gap-3 pt-5 mt-6 border-t border-slate-100">
             <Button
               type="button"
               variant="secondary"
@@ -333,7 +331,7 @@ export function BookingForm({
             >
               {isEditMode ? "Reschedule" : "Book"} Appointment
             </Button>
-          </SheetFooter>
+          </div>
         </form>
       </SheetContent>
     </Sheet>
