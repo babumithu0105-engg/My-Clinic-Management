@@ -128,7 +128,7 @@ export default function DoctorPatientDetailsPage({
           {patient.sex && (
             <div>
               <span className="text-sm text-slate-600">Sex</span>
-              <div className="text-slate-900 font-medium">{patient.sex}</div>
+              <div className="text-slate-900 font-medium">{patient.sex === "M" ? "Male" : "Female"}</div>
             </div>
           )}
         </div>
