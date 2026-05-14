@@ -43,15 +43,27 @@ export function PatientForm({
   });
 
   useEffect(() => {
-    if (initialData) {
-      setFormData({
-        name: initialData.name || "",
-        phone_number: initialData.phone_number || "",
-        age: initialData.age?.toString() || "",
-        sex: initialData.sex || "",
-        address: initialData.address || "",
-        status: (initialData.status as "active" | "inactive") || "active",
-      });
+    if (open) {
+      if (initialData) {
+        setFormData({
+          name: initialData.name || "",
+          phone_number: initialData.phone_number || "",
+          age: initialData.age?.toString() || "",
+          sex: initialData.sex || "",
+          address: initialData.address || "",
+          status: (initialData.status as "active" | "inactive") || "active",
+        });
+      } else {
+        setFormData({
+          name: "",
+          phone_number: "",
+          age: "",
+          sex: "",
+          address: "",
+          status: "active",
+        });
+      }
+      setErrors({});
     }
   }, [initialData, open]);
 
