@@ -17,6 +17,7 @@ interface LoginFormData {
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isRedirecting, setIsRedirecting] = useState(false);
   const [formData, setFormData] = useState<LoginFormData>({
     email: "",
     password: "",
@@ -96,6 +97,7 @@ export default function LoginPage() {
       }
 
       toast.success("Login successful!");
+      setIsRedirecting(true);
 
       setTimeout(() => {
         window.location.href = redirectPath;
@@ -173,7 +175,15 @@ export default function LoginPage() {
           </div>
 
           {/* Form Card */}
-          <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+          <div className="relative bg-white rounded-2xl shadow-lg p-8 border border-slate-200">
+            {isRedirecting && (
+              <div className="absolute inset-0 bg-white/50 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                <div className="flex flex-col items-center gap-3">
+                  <div className="w-8 h-8 border-3 border-slate-200 border-t-primary-600 rounded-full animate-spin"></div>
+                  <p className="text-sm text-slate-600">Redirecting...</p>
+                </div>
+              </div>
+            )}
             <div className="mb-8">
               <h2 className="text-2xl font-bold text-slate-900 mb-2">
                 Welcome Back
@@ -193,7 +203,7 @@ export default function LoginPage() {
                 onChange={handleChange}
                 error={errors.email}
                 required
-                disabled={isLoading}
+                disabled={isLoading || isRedirecting}
               />
 
               <Input
@@ -205,7 +215,7 @@ export default function LoginPage() {
                 onChange={handleChange}
                 error={errors.password}
                 required
-                disabled={isLoading}
+                disabled={isLoading || isRedirecting}
               />
 
               <Button
@@ -213,10 +223,10 @@ export default function LoginPage() {
                 variant="primary"
                 size="lg"
                 fullWidth
-                isLoading={isLoading}
-                disabled={isLoading}
+                isLoading={isLoading || isRedirecting}
+                disabled={isLoading || isRedirecting}
               >
-                {isLoading ? "Signing in..." : "Sign In"}
+                {isLoading ? "Signing in..." : isRedirecting ? "Redirecting..." : "Sign In"}
               </Button>
             </form>
           </div>
